@@ -23,7 +23,7 @@ import modelo.Papel;
  *
  * @author Emm
  */
-public class PapelJpaController implements Serializable {
+public class PapelDAO implements Serializable {
 
    
     private EntityManagerFactory emf =  Persistence.createEntityManagerFactory( "ControleFinanceiroPU" );

@@ -5,7 +5,7 @@
  */
 package Default;
 
-import DAO.UsuarioJpaController;
+import DAO.UsuarioDAO;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -59,11 +59,11 @@ public class CriptografiaSenha {
             
          public void criptografaSenhaUsuario(Usuario usuario) throws Exception{
             
-            UsuarioJpaController usuarioDAO = new UsuarioJpaController();
+            UsuarioDAO usuarioDAO = new UsuarioDAO();
              
             String senhaCriptografada = convertStringToMd5(usuario.getPassword());
             usuario.setPassword(senhaCriptografada);
-            usuarioDAO.edit(usuario);
+            usuarioDAO.editarUsuario(usuario);
                  
              }
             
@@ -88,8 +88,8 @@ public class CriptografiaSenha {
                String novaSenhaCriptografada = convertStringToMd5(novaSenha);
                usuario.setPassword(novaSenhaCriptografada);
                
-               UsuarioJpaController usuarioDAO = new UsuarioJpaController();
-               usuarioDAO.edit(usuario);
+               UsuarioDAO usuarioDAO = new UsuarioDAO();
+               usuarioDAO.editarUsuario(usuario);
                
                enviarNovaSenhaEmailUsuario(novaSenha);
          }

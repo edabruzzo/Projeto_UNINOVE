@@ -8,10 +8,7 @@ package DAO;
 import DAO.exceptions.NonexistentEntityException;
 import bean.GastoBean;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -30,7 +27,7 @@ import modelo.Local;
  *
  * @author Emm
  */
-public class GastoJpaController implements Serializable {
+public class GastoDAO implements Serializable {
 
       private EntityManagerFactory emf =  Persistence.createEntityManagerFactory( "ControleFinanceiroPU" );
 

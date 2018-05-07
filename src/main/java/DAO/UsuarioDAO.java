@@ -7,8 +7,11 @@ package DAO;
 
 import DAO.exceptions.NonexistentEntityException;
 import Default.CriptografiaSenha;
+import Default.FabricaConexao;
 import bean.LoginFilter;
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
@@ -17,45 +20,39 @@ import modelo.Papel;
 import modelo.Gasto;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
 import modelo.Usuario;
 
 /**
  *
  * @author Emm
  */
-public class UsuarioJpaController implements Serializable {
+public class UsuarioDAO implements Serializable {
 
   
-    private EntityManagerFactory emf =  Persistence.createEntityManagerFactory( "ControleFinanceiroPU" );
+    @Inject
+    private FabricaConexao fabrica;
 
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
 
-    public void create(Usuario usuario) {
+    public void criarUsuario(Usuario usuario) throws ClassNotFoundException, SQLException {
+
+        
         if (usuario.getGastos() == null) {
             usuario.setGastos(new ArrayList<Gasto>());
         }
-        EntityManager em = null;
+
         try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Papel papel = usuario.getPapel();
-            if (papel != null) {
-                papel = em.getReference(papel.getClass(), papel.getIdPapel());
-                usuario.setPapel(papel);
+            for (Gasto gasto : usuario.getGastos()) {
+                
+              String  sql = "INSERT INTO tb_tb_usuario_tb_gasto((Usuario_IDUSUARIO, gastos_ID_GASTO)"
+                        + "VALUES("+usuario.getIdUsuario()+ ", "+gasto.getId_gasto()+");";
+                
+                fabrica.executaQuerieUpdate(sql);
             }
-            List<Gasto> attachedGastos = new ArrayList<Gasto>();
-            for (Gasto gastosGastoToAttach : usuario.getGastos()) {
-                gastosGastoToAttach = em.getReference(gastosGastoToAttach.getClass(), gastosGastoToAttach.getId_gasto());
-                attachedGastos.add(gastosGastoToAttach);
-            }
-            usuario.setGastos(attachedGastos);
-            em.persist(usuario);
+
+            String sql2 = "INSERT INTO tb_usuario ("
             if (papel != null) {
                 papel.getUsuario().add(usuario);
                 papel = em.merge(papel);
@@ -78,7 +75,7 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public void edit(Usuario usuario) throws NonexistentEntityException, Exception {
+    public void editarUsuario(Usuario usuario) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -143,7 +140,7 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public void destroy(int id) throws NonexistentEntityException {
+    public void removerUsuario(int id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -175,7 +172,7 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public List<Usuario> findUsuarioEntities() {
+    public List<Usuario> consultaUsuarios() {
         return findUsuarioEntities(true, -1, -1);
     }
 
@@ -198,7 +195,7 @@ public class UsuarioJpaController implements Serializable {
         
         if (listaUsuario.isEmpty()){
         
-        PapelJpaController papelDAO = new PapelJpaController();
+        PapelDAO papelDAO = new PapelDAO();
         Papel papel1 = new Papel();
         papel1.setAtivo(true);
         papel1.setDescPapel("SUPER ADMINISTRADOR");
@@ -230,7 +227,7 @@ public class UsuarioJpaController implements Serializable {
         usuario.setNome("EDITE SEU NOME, LOGIN E SENHA");
         usuario.setEmail("ALTERE SEU E-MAIL");
         usuario.setPapel(papel1);
-        create(usuario);
+        criarUsuario(usuario);
             
        }
             
@@ -271,7 +268,7 @@ public class UsuarioJpaController implements Serializable {
         Usuario usuario = new Usuario();
         EntityManager em = getEntityManager();
         List<Usuario> listaUsuarios = new ArrayList();
-        listaUsuarios = findUsuarioEntities();
+        listaUsuarios = consultaUsuarios();
         if (listaUsuarios != null || !listaUsuarios.isEmpty()){
          
         String sql = "SELECT * FROM tb_usuario WHERE LOGIN LIKE '"+

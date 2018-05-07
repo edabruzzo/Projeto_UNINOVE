@@ -7,7 +7,7 @@ package bean;
 
 
 
-import DAO.UsuarioJpaController;
+import DAO.UsuarioDAO;
 import Default.CriptografiaSenha;
 import java.io.IOException;
 import javax.faces.application.FacesMessage;
@@ -67,7 +67,7 @@ private  boolean permiteAcesso = false;
            String redireciona = "login?faces-redirect=true";
            
             
-            UsuarioJpaController usuarioDAO = new UsuarioJpaController();
+            UsuarioDAO usuarioDAO = new UsuarioDAO();
             Usuario novoUsuario = new Usuario();
          
             //faz a criptografia da senha entrada pelo usuário antes de 
@@ -232,7 +232,7 @@ private  boolean permiteAcesso = false;
                public void solicitarNovaSenha() throws Exception {
        
              
-             UsuarioJpaController usuarioDAO = new UsuarioJpaController();
+             UsuarioDAO usuarioDAO = new UsuarioDAO();
              Usuario usuarioSemSenha = usuarioDAO.findByLogin(this.usuario.getLogin());
              if(usuarioSemSenha != null){
                  

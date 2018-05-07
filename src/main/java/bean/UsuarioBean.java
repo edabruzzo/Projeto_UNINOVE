@@ -5,8 +5,8 @@
  */
 package bean;
 
-import DAO.PapelJpaController;
-import DAO.UsuarioJpaController;
+import DAO.PapelDAO;
+import DAO.UsuarioDAO;
 import DAO.exceptions.NonexistentEntityException;
 import Default.CriptografiaSenha;
 import java.util.List;
@@ -75,7 +75,7 @@ public class UsuarioBean {
         possuiPrivilegio = lf.verificaPrivilegio();
         possuiPrivilegioSuper = lf.verificaPrivilegioSuperAdmin();
         
-         PapelJpaController papelDAO = new PapelJpaController();
+         PapelDAO papelDAO = new PapelDAO();
         
         if(possuiPrivilegio & !possuiPrivilegioSuper){
        
@@ -101,19 +101,19 @@ public class UsuarioBean {
         
         if(possuiPrivilegio){
             
-        PapelJpaController papelDAO = new PapelJpaController();
+        PapelDAO papelDAO = new PapelDAO();
         this.papel = papelDAO.findPapel(this.idPapel); 
         this.usuario.setPapel(this.papel);
             
-         UsuarioJpaController usuarioDAO = new UsuarioJpaController();
+         UsuarioDAO usuarioDAO = new UsuarioDAO();
          CriptografiaSenha criptoSenha = new CriptografiaSenha();
          String senhaCriptografada = criptoSenha.convertStringToMd5(this.usuario.getPassword());
          this.usuario.setPassword(senhaCriptografada);
          if(usuarioDAO.findByLogin(this.usuario.getLogin()) == null){
-                 usuarioDAO.create(this.usuario);
+                 usuarioDAO.criarUsuario(this.usuario);
                  this.usuario =  new Usuario();
          }else {
-                      usuarioDAO.edit(this.usuario);
+                      usuarioDAO.editarUsuario(this.usuario);
                       this.usuario =  new Usuario();
                       this.canEdit = false;
 
@@ -128,13 +128,13 @@ public class UsuarioBean {
     
     
     public List<Usuario> listaUsuarios(){
-         UsuarioJpaController usuarioDAO = new UsuarioJpaController();
-         return usuarioDAO.findUsuarioEntities();
+         UsuarioDAO usuarioDAO = new UsuarioDAO();
+         return usuarioDAO.consultaUsuarios();
     }
     
     public void deletaUsuario(Usuario usuario) throws NonexistentEntityException{
-         UsuarioJpaController usuarioDAO = new UsuarioJpaController();
-         usuarioDAO.destroy(usuario.getIdUsuario());
+         UsuarioDAO usuarioDAO = new UsuarioDAO();
+         usuarioDAO.removerUsuario(usuario.getIdUsuario());
         
     }
     

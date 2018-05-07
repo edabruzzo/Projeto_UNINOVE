@@ -5,7 +5,7 @@
  */
 package bean;
 
-import DAO.ProjetoJpaController;
+import DAO.ProjetoDAO;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -39,7 +39,7 @@ public class ProjetoBean {
     
     public void criarNovoProjeto(){
         
-        ProjetoJpaController projetoDAO = new ProjetoJpaController();
+        ProjetoDAO projetoDAO = new ProjetoDAO();
         this.projeto.setAtivo(true);
         projetoDAO.create(this.projeto);
         
@@ -48,7 +48,7 @@ public class ProjetoBean {
     
     public List<Projeto> listaProjetos(){
         
-    ProjetoJpaController projetoDAO = new ProjetoJpaController();
+    ProjetoDAO projetoDAO = new ProjetoDAO();
     List<Projeto> listaProjetos = new ArrayList();
     
     listaProjetos = projetoDAO.findProjetoEntities();

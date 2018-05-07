@@ -5,10 +5,10 @@
  */
 package bean;
 
-import DAO.GastoJpaController;
-import DAO.LocalJpaController;
-import DAO.ProjetoJpaController;
-import DAO.UsuarioJpaController;
+import DAO.GastoDAO;
+import DAO.LocalDAO;
+import DAO.ProjetoDAO;
+import DAO.UsuarioDAO;
 import DAO.exceptions.NonexistentEntityException;
 import java.util.List;
 import java.util.Locale;
@@ -79,7 +79,7 @@ public class GastoBean {
 
 
     public List<Gasto> getListaGastosTotais() {
-         GastoJpaController gastoDAO = new GastoJpaController();
+         GastoDAO gastoDAO = new GastoDAO();
         this.listaGastosTotais = gastoDAO.listaGastosByConsultaSQL();
         return listaGastosTotais;
         
@@ -291,7 +291,7 @@ public class GastoBean {
        
        public void verificaGastosSQL(){
            
-           GastoJpaController gastoDAO = new GastoJpaController();
+           GastoDAO gastoDAO = new GastoDAO();
            LoginFilter lf = new LoginFilter();
            if(lf.verificaPrivilegioSuperAdmin()){
            this.listaGastosPesquisa = gastoDAO.listaGastosByConsultaSQL();
@@ -308,7 +308,7 @@ public class GastoBean {
        LoginFilter lf = new LoginFilter();
        Usuario usuarioLogado = new Usuario();
        usuarioLogado = lf.getUsuario();
-       GastoJpaController gastoDAO = new GastoJpaController();
+       GastoDAO gastoDAO = new GastoDAO();
         
        if(usuarioLogado.getPapel().isPrivAdmin()){
             
@@ -336,7 +336,7 @@ public class GastoBean {
        LoginFilter lf = new LoginFilter();
        Usuario usuarioLogado = new Usuario();
        usuarioLogado = lf.getUsuario();
-        GastoJpaController gastoDAO = new GastoJpaController();
+        GastoDAO gastoDAO = new GastoDAO();
         
         if(usuarioLogado.getPapel().isPrivAdmin()){
             
@@ -361,7 +361,7 @@ public class GastoBean {
        LoginFilter lf = new LoginFilter();
        Usuario usuarioLogado = new Usuario();
        usuarioLogado = lf.getUsuario();
-       GastoJpaController gastoDAO = new GastoJpaController();
+       GastoDAO gastoDAO = new GastoDAO();
         
         if(usuarioLogado.getPapel().isPrivAdmin()){
             
@@ -384,7 +384,7 @@ public class GastoBean {
         LoginFilter lf = new LoginFilter();
         Usuario usuarioLogado = new Usuario();
         usuarioLogado = lf.getUsuario();
-        GastoJpaController gastoDAO = new GastoJpaController();
+        GastoDAO gastoDAO = new GastoDAO();
         
         if(usuarioLogado.getPapel().isPrivAdmin()){
             
@@ -406,7 +406,7 @@ public class GastoBean {
     
     public void adicionarGasto(){
     
-        GastoJpaController gastoDAO = new GastoJpaController();
+        GastoDAO gastoDAO = new GastoDAO();
         boolean gravado = false;
           
          
@@ -442,7 +442,7 @@ public class GastoBean {
     
         public void gravaLocal(){
             
-             LocalJpaController localDAO = new LocalJpaController();
+             LocalDAO localDAO = new LocalDAO();
             
             
         this.local = localDAO.findLocal(localID);
@@ -452,7 +452,7 @@ public class GastoBean {
     
         public List<Local> selecionaLocais(){
             
-            LocalJpaController locaisDAO = new LocalJpaController();
+            LocalDAO locaisDAO = new LocalDAO();
            
             List<Local> listaLocais =  locaisDAO.findLocalEntities();
             
@@ -462,7 +462,7 @@ public class GastoBean {
         
         public List<Projeto> selecionaProjetos(){
             
-            ProjetoJpaController projetoDAO = new ProjetoJpaController();
+            ProjetoDAO projetoDAO = new ProjetoDAO();
             List<Projeto> listaProjetos = projetoDAO.findProjetoEntities();
             return listaProjetos;
         }
@@ -470,16 +470,16 @@ public class GastoBean {
         
            public List<Usuario> selecionaUsuarios(){
             
-            UsuarioJpaController usuarioDAO = new UsuarioJpaController();
+            UsuarioDAO usuarioDAO = new UsuarioDAO();
            
-            List<Usuario> listaUsuarios =  usuarioDAO.findUsuarioEntities();
+            List<Usuario> listaUsuarios =  usuarioDAO.consultaUsuarios();
             
             return listaUsuarios;
         }
            
              public void gravaUsuario(){
             
-            UsuarioJpaController usuarioDAO = new UsuarioJpaController();
+            UsuarioDAO usuarioDAO = new UsuarioDAO();
             
             this.usuario = usuarioDAO.findUsuario(IDUsuarioPesquisado);
             gasto.setUsuario(usuario);
@@ -538,7 +538,7 @@ public class GastoBean {
                  boolean possuiPrivilegio = lf.verificaPrivilegio();
                  
                  if(possuiPrivilegio & this.gastoEditado != null){
-                 GastoJpaController gastoDAO = new GastoJpaController();
+                 GastoDAO gastoDAO = new GastoDAO();
                  gastoDAO.edit(this.gastoEditado);
                  this.canEdit = false;
                  this.listaGastosTotais = gastoDAO.listaGastosByConsultaSQL();
@@ -556,7 +556,7 @@ public class GastoBean {
                  
                  if(possuiPrivilegio & this.gasto != null){
                  
-                 GastoJpaController gastoDAO = new GastoJpaController();
+                 GastoDAO gastoDAO = new GastoDAO();
                  gastoDAO.destroy(this.gasto.getId_gasto());
                  this.mostrarTabelaPesquisas = false;
                  this.listaGastosPesquisa = null;
@@ -568,7 +568,7 @@ public class GastoBean {
         
         public String verificaGastosTotais(){
             
-            GastoJpaController gastoDAO = new GastoJpaController();
+            GastoDAO gastoDAO = new GastoDAO();
             LoginFilter lf = new LoginFilter();
             boolean isAdministrador = lf.verificaPrivilegio();
             Usuario usuarioLogado = lf.getUsuario();

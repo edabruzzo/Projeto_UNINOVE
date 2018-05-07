@@ -7,10 +7,9 @@ package Default;
  */
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,7 +28,7 @@ public class FabricaConexao {
         Connection conn = criaConexao();
         Statement listaSQLs = conn.createStatement();
         conn.setAutoCommit(false);
-        
+
         String sql1 = "CREATE TABLE IF NOT EXISTS tb_gasto (ID_GASTO INTEGER AUTO_INCREMENT NOT NULL, "
                 + "DATAGASTO DATE NOT NULL, MODALIDADEPAGAMENTO VARCHAR(255) NOT NULL, TIPOGASTO VARCHAR(255) NOT NULL, VALORGASTO DOUBLE NOT NULL, USUARIO_IDUSUARIO INTEGER, LOCAL_ID_LOCAL INTEGER, PRIMARY KEY (ID_GASTO));";
         listaSQLs.addBatch(sql1);
@@ -110,19 +109,16 @@ public class FabricaConexao {
         String sql26 = "INSERT INTO tb_papel_tb_usuario (usuario_IDUSUARIO, Papel_IDPAPEL) VALUES (1, 1)";
         listaSQLs.addBatch(sql26);
 
-        
-
         try {
 
-         int[] i =  listaSQLs.executeBatch();
+            int[] i = listaSQLs.executeBatch();
 
         } catch (SQLException ex) {
             Logger.getLogger(FabricaConexao.class.getName()).log(Level.SEVERE, null, ex);
-            
+
         } finally {
 
             fecharConexao(conn);
-        
 
         }
 
@@ -194,6 +190,79 @@ public class FabricaConexao {
 
         }
     }
+
+    public ResultSet executaQuerieResultSet(String sql) throws ClassNotFoundException, SQLException {
+
+        Connection conn = criaConexao();
+        Statement stmt = conn.createStatement();
+
+        ResultSet rs = null;
+        try {
+            System.out.println("Executando a seguinte query .....");
+            System.out.println(sql);
+            rs = stmt.executeQuery(sql);
+            System.out.println("Executada com sucesso!");
+
+        } catch (SQLException ex) {
+            Logger.getLogger(FabricaConexao.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            
+            rs.close();
+            stmt.close();
+            fecharConexao(conn);
+
+        }
+
+        return rs;
+
+    }
+
+    public void executaQuerieSemResultado(String sql) throws ClassNotFoundException, SQLException {
+
+        Connection conn = criaConexao();
+        Statement stmt = conn.createStatement();
+
+        try {
+            System.out.println("Executando a seguinte query .....");
+            System.out.println(sql);
+            stmt.execute(sql);
+            System.out.println("Executada com sucesso!");
+        } catch (SQLException ex) {
+            Logger.getLogger(FabricaConexao.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+
+            stmt.close();
+            fecharConexao(conn);
+
+        }
+
+    }
+    
+    
+    
+        public void executaQuerieUpdate(String sql) throws ClassNotFoundException, SQLException {
+
+        Connection conn = criaConexao();
+        Statement stmt = conn.createStatement();
+
+        try {
+            System.out.println("Executando a seguinte query .....");
+            System.out.println(sql);
+            stmt.executeUpdate(sql);
+            System.out.println("Executada com sucesso!");
+        } catch (SQLException ex) {
+            Logger.getLogger(FabricaConexao.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+
+            stmt.close();
+            fecharConexao(conn);
+
+        }
+
+    }
+
+    
+    
 
     public String getURL() {
         return URL;

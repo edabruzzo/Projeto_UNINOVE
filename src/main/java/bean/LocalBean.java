@@ -5,8 +5,8 @@
  */
 package bean;
 
-import DAO.LocalJpaController;
-import DAO.ProjetoJpaController;
+import DAO.LocalDAO;
+import DAO.ProjetoDAO;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -60,7 +60,7 @@ public class LocalBean {
     
     public List<Projeto> listaProjetos(){
         
-        ProjetoJpaController projetoDAO = new ProjetoJpaController();
+        ProjetoDAO projetoDAO = new ProjetoDAO();
          List<Projeto> listaProjetos = new ArrayList();
          listaProjetos = projetoDAO.findProjetoEntities();
          return listaProjetos;
@@ -68,7 +68,7 @@ public class LocalBean {
     }
     
     public void gravaProjetoNoLocal(){
-         ProjetoJpaController projetoDAO = new ProjetoJpaController();
+         ProjetoDAO projetoDAO = new ProjetoDAO();
          this.projeto = projetoDAO.findProjeto(projetoID);
          this.local.setProjeto(this.projeto);
     }
@@ -76,14 +76,14 @@ public class LocalBean {
     
     public void criaNovoLocal(){
         
-        LocalJpaController localDAO = new LocalJpaController();
+        LocalDAO localDAO = new LocalDAO();
         localDAO.create(this.local);
         
     }
     
     
     public List<Local> listaLocais(){
-          LocalJpaController localDAO = new LocalJpaController();
+          LocalDAO localDAO = new LocalDAO();
         List<Local> listaLocais = new ArrayList();  
         listaLocais = localDAO.findLocalEntities();
         return listaLocais;

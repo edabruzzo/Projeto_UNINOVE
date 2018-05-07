@@ -3,7 +3,7 @@ package bean;
 
 
  
-import DAO.GastoJpaController;
+import DAO.GastoDAO;
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -78,7 +78,7 @@ public class ChartView implements Serializable {
         series1.setFill(true);
         
         
-        GastoJpaController gastoDAO = new GastoJpaController();        
+        GastoDAO gastoDAO = new GastoDAO();        
         List<Gasto> listaGastos = gastoDAO.listaGastosByProjeto(1);
 
        

@@ -24,7 +24,7 @@ import modelo.Local;
  *
  * @author Emm
  */
-public class LocalJpaController implements Serializable {
+public class LocalDAO implements Serializable {
 
       private EntityManagerFactory emf =  Persistence.createEntityManagerFactory( "ControleFinanceiroPU" );
 
