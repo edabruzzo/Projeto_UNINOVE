@@ -6,23 +6,16 @@
 package DAO;
 
 import DAO.exceptions.NonexistentEntityException;
-import Default.CriptografiaSenha;
 import Default.FabricaConexao;
-import bean.LoginFilter;
 import java.io.Serializable;
-import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import modelo.Papel;
 import modelo.Gasto;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
+import static modelo.Gasto_.usuario;
 import modelo.Usuario;
 
 /**
@@ -71,13 +64,27 @@ public class UsuarioDAO implements Serializable {
     
 
     public void editarUsuario(Usuario usuario) throws NonexistentEntityException, Exception {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Usuario persistentUsuario = em.find(Usuario.class, usuario.getIdUsuario());
-            Papel papelOld = persistentUsuario.getPapel();
-            Papel papelNew = usuario.getPapel();
+
+            String sql1 = "UPDATE tb_usuario "
+                    + "SET email = '"+usuario.getEmail()
+                    + "', LOGIN = '"+usuario.getLogin()
+                    + "', NOME =  '"+usuario.getNome()
+                    + "', PASSWORD = '"+usuario.getPassword()
+                    + "', PAPEL_IDPAPEL = "+usuario.getPapel().getIdPapel()
+                    + "WHERE id_usuario = "+usuario.getIdUsuario();
+            
+            fabrica.executaQuerieUpdate(sql1);
+
+            String sql2 = "UPDATE tb_papel_tb_usuario"
+                    + "SET Papel_IDPAPEL =  "+usuario.getPapel().getIdPapel()
+                    + "WHERE usuario_IDUSUARIO = "+usuario.getIdUsuario();
+            
+            fabrica.executaQuerieUpdate(sql2);
+                
+            }
+                
+                
+            
             List<Gasto> gastosOld = persistentUsuario.getGastos();
             List<Gasto> gastosNew = usuario.getGastos();
             if (papelNew != null) {
