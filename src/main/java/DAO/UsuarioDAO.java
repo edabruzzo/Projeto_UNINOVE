@@ -43,37 +43,32 @@ public class UsuarioDAO implements Serializable {
             usuario.setGastos(new ArrayList<Gasto>());
         }
 
-        try {
             for (Gasto gasto : usuario.getGastos()) {
                 
               String  sql = "INSERT INTO tb_tb_usuario_tb_gasto((Usuario_IDUSUARIO, gastos_ID_GASTO)"
                         + "VALUES("+usuario.getIdUsuario()+ ", "+gasto.getId_gasto()+");";
                 
-                fabrica.executaQuerieUpdate(sql);
+             fabrica.executaQuerieUpdate(sql);
             }
 
-            String sql2 = "INSERT INTO tb_usuario ("
-            if (papel != null) {
-                papel.getUsuario().add(usuario);
-                papel = em.merge(papel);
+            String sql2 = "INSERT INTO tb_usuario (email, LOGIN, NOME, PASSWORD, PAPEL_IDPAPEL)"
+                    + "VALUES ('"+usuario.getEmail()+"', '"+usuario.getLogin()+"', "
+                    + "'"+usuario.getPassword()+"', "+usuario.getPapel().getIdPapel()+");";
+            
+            fabrica.executaQuerieUpdate(sql2);
+                    
+            if (usuario.getPapel() != null) {
+                
+             String sql3 = "INSERT INTO tb_papel_tb_usuario (Papel_IDPAPEL, usuario_IDUSUARIO)"
+                        + "VALUES("+usuario.getPapel().getIdPapel()+", "+usuario.getIdUsuario()+");";
+                        
+                fabrica.executaQuerieUpdate(sql3);
+  
             }
-            for (Gasto gastosGasto : usuario.getGastos()) {
-                Usuario oldUsuarioOfGastosGasto = gastosGasto.getUsuario();
-                gastosGasto.setUsuario(usuario);
-                gastosGasto = em.merge(gastosGasto);
-                if (oldUsuarioOfGastosGasto != null) {
-                    oldUsuarioOfGastosGasto.getGastos().remove(gastosGasto);
-                    oldUsuarioOfGastosGasto = em.merge(oldUsuarioOfGastosGasto);
-                }
-            }
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-           
-            }
+  
+            
         }
-    }
+    
 
     public void editarUsuario(Usuario usuario) throws NonexistentEntityException, Exception {
         EntityManager em = null;
