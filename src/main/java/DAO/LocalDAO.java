@@ -5,8 +5,9 @@
  */
 package DAO;
 
-import DAO.exceptions.NonexistentEntityException;
 import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,10 +16,12 @@ import modelo.Projeto;
 import modelo.Gasto;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import modelo.Local;
+import modelo.Usuario;
 
 /**
  *
@@ -26,12 +29,11 @@ import modelo.Local;
  */
 public class LocalDAO implements Serializable {
 
-      private EntityManagerFactory emf =  Persistence.createEntityManagerFactory( "ControleFinanceiroPU" );
-
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
+    @Inject
+    GastoDAO gastoDAO;
+    
+    @Inject
+    ProjetoDAO projetoDAO;
 
     public void create(Local local) {
         if (local.getGastos() == null) {
@@ -221,4 +223,31 @@ public class LocalDAO implements Serializable {
         }
     }
     
+
+
+
+
+
+
+     public Local extraiLocalResultSet(ResultSet rs) throws SQLException{
+        
+          Local  local = new Local();
+          Projeto projeto = new Projeto();
+          
+          local.setId_local(rs.getInt("ID_LOCAL"));
+          local.setNome(rs.getString("NOME"));
+          
+          local.setGastos(gastoDAO.listaGastosByLocal(rs.getInt("ID_LOCAL")));
+          
+          projeto = projetoDAO.findProjeto(rs.getInt("PROJETO_ID_PROJETO "));
+          
+          local.setProjeto(projeto);
+       
+          return local;
+        }
+
 }
+
+
+
+
