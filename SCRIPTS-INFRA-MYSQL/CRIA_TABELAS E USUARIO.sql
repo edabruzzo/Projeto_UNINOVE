@@ -19,7 +19,7 @@ ALTER TABLE tb_papel_tb_usuario ADD CONSTRAINT FK_tb_papel_tb_usuario_Papel_IDPA
 ALTER TABLE tb_papel_tb_usuario ADD CONSTRAINT FK_tb_papel_tb_usuario_usuario_IDUSUARIO FOREIGN KEY (usuario_IDUSUARIO) REFERENCES tb_usuario (IDUSUARIO);
 ALTER TABLE tb_usuario_tb_gasto ADD CONSTRAINT FK_tb_usuario_tb_gasto_Usuario_IDUSUARIO FOREIGN KEY (Usuario_IDUSUARIO) REFERENCES tb_usuario (IDUSUARIO);
 ALTER TABLE tb_usuario_tb_gasto ADD CONSTRAINT FK_tb_usuario_tb_gasto_gastos_ID_GASTO FOREIGN KEY (gastos_ID_GASTO) REFERENCES tb_gasto (ID_GASTO);
-INSERT INTO tb_papel (ATIVO, DESCPAPEL, PRIVADMIN, PRIV_SUPERADMIN) VALUES (true, 'SUPER ADMINISTRAADOR', true, true);
+INSERT INTO tb_papel (ATIVO, DESCPAPEL, PRIVADMIN, PRIV_SUPERADMIN) VALUES (true, 'SUPER_ADMINISTRADOR', true, true);
 INSERT INTO tb_papel (ATIVO, DESCPAPEL, PRIVADMIN, PRIV_SUPERADMIN) VALUES (true, 'ADMINISTRADOR', true, false);
 INSERT INTO tb_papel (ATIVO, DESCPAPEL, PRIVADMIN, PRIV_SUPERADMIN) VALUES (true, 'USUÁRIO', false, false);
 INSERT INTO tb_usuario (EMAIL, LOGIN, NOME, PASSWORD, PAPEL_IDPAPEL) VALUES ('xxx@gmail.com', 'SUPERADMIN', 'Administrador', '' , 1);

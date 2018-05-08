@@ -34,182 +34,60 @@ public class PapelDAO implements Serializable {
     FabricaConexao fabrica;
     
     
-    
-    public void create(Papel papel) {
-        if (papel.getUsuario() == null) {
-            papel.setUsuario(new ArrayList<Usuario>());
-        }
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            List<Usuario> attachedUsuario = new ArrayList<Usuario>();
-            for (Usuario usuarioUsuarioToAttach : papel.getUsuario()) {
-                usuarioUsuarioToAttach = em.getReference(usuarioUsuarioToAttach.getClass(), usuarioUsuarioToAttach.getIdUsuario());
-                attachedUsuario.add(usuarioUsuarioToAttach);
-            }
-            papel.setUsuario(attachedUsuario);
-            em.persist(papel);
-            for (Usuario usuarioUsuario : papel.getUsuario()) {
-                Papel oldPapelOfUsuarioUsuario = usuarioUsuario.getPapel();
-                usuarioUsuario.setPapel(papel);
-                usuarioUsuario = em.merge(usuarioUsuario);
-                if (oldPapelOfUsuarioUsuario != null) {
-                    oldPapelOfUsuarioUsuario.getUsuario().remove(usuarioUsuario);
-                    oldPapelOfUsuarioUsuario = em.merge(oldPapelOfUsuarioUsuario);
-                }
-            }
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-           
-            }
-        }
+
+
+    public List<Papel> findPapelEntities() throws ClassNotFoundException, SQLException {
+        
+        String sql = "SELECT * FROM tb_papel;";
+        
+        ResultSet rs = fabrica.executaQuerieResultSet(sql);
+        
+        return this.extrairListPapeisResultSet(rs);
+
     }
 
-    public void edit(Papel papel) throws NonexistentEntityException, Exception {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Papel persistentPapel = em.find(Papel.class, papel.getIdPapel());
-            List<Usuario> usuarioOld = persistentPapel.getUsuario();
-            List<Usuario> usuarioNew = papel.getUsuario();
-            List<Usuario> attachedUsuarioNew = new ArrayList<Usuario>();
-            for (Usuario usuarioNewUsuarioToAttach : usuarioNew) {
-                usuarioNewUsuarioToAttach = em.getReference(usuarioNewUsuarioToAttach.getClass(), usuarioNewUsuarioToAttach.getIdUsuario());
-                attachedUsuarioNew.add(usuarioNewUsuarioToAttach);
-            }
-            usuarioNew = attachedUsuarioNew;
-            papel.setUsuario(usuarioNew);
-            papel = em.merge(papel);
-            for (Usuario usuarioOldUsuario : usuarioOld) {
-                if (!usuarioNew.contains(usuarioOldUsuario)) {
-                    usuarioOldUsuario.setPapel(null);
-                    usuarioOldUsuario = em.merge(usuarioOldUsuario);
-                }
-            }
-            for (Usuario usuarioNewUsuario : usuarioNew) {
-                if (!usuarioOld.contains(usuarioNewUsuario)) {
-                    Papel oldPapelOfUsuarioNewUsuario = usuarioNewUsuario.getPapel();
-                    usuarioNewUsuario.setPapel(papel);
-                    usuarioNewUsuario = em.merge(usuarioNewUsuario);
-                    if (oldPapelOfUsuarioNewUsuario != null && !oldPapelOfUsuarioNewUsuario.equals(papel)) {
-                        oldPapelOfUsuarioNewUsuario.getUsuario().remove(usuarioNewUsuario);
-                        oldPapelOfUsuarioNewUsuario = em.merge(oldPapelOfUsuarioNewUsuario);
-                    }
-                }
-            }
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            String msg = ex.getLocalizedMessage();
-            if (msg == null || msg.length() == 0) {
-                int id = papel.getIdPapel();
-                if (findPapel(id) == null) {
-                    throw new NonexistentEntityException("The papel with id " + id + " no longer exists.");
-                }
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-               em.close();
-          
-            }
-        }
-    }
 
-    public void destroy(int id) throws NonexistentEntityException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Papel papel;
-            try {
-                papel = em.getReference(Papel.class, id);
-                papel.getIdPapel();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The papel with id " + id + " no longer exists.", enfe);
-            }
-            List<Usuario> usuario = papel.getUsuario();
-            for (Usuario usuarioUsuario : usuario) {
-                usuarioUsuario.setPapel(null);
-                usuarioUsuario = em.merge(usuarioUsuario);
-            }
-            em.remove(papel);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-               em.close();
-           
-            }
-        }
-    }
-
-    public List<Papel> findPapelEntities() {
-        return findPapelEntities(true, -1, -1);
-    }
-
-    public List<Papel> findPapelEntities(int maxResults, int firstResult) {
-        return findPapelEntities(false, maxResults, firstResult);
-    }
-
-    private List<Papel> findPapelEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        List<Papel> listaPapeis = new ArrayList();
-        try {
-            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            cq.select(cq.from(Papel.class));
-            Query q = em.createQuery(cq);
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            
-            return (List<Papel>) q.getResultList();
-            
-        } finally{
-            em.close();
-        }
-    }
     
    
-      public List<Papel> findPapelMenosSuper(){
-          EntityManager em = getEntityManager();
-          String sqlString = "SELECT * FROM tb_papel WHERE IDPAPEL <> 1;";
-          Query q = em.createNativeQuery(sqlString, Papel.class);
+      public List<Papel> findPapelMenosSuper() throws ClassNotFoundException, SQLException{
           
-          return (List<Papel>)q.getResultList();
+          String sqlString = "SELECT * FROM tb_papel WHERE PRIV_SUPERADMIN IS NOT TRUE;";
+         ResultSet rs = fabrica.executaQuerieResultSet(sqlString);
+          
+          return this.extrairListPapeisResultSet(rs);
           
           
           
       }
    
    
-    public Papel findPapel(int id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(Papel.class, id);
-        } finally {
-            em.close();
-           
-        }
+    public Papel findPapel(int id) throws ClassNotFoundException, SQLException {
+
+        String sql = "SELECT * FROM tb_papel WHERE IDPAPEL = "+id+";";
+        
+       ResultSet rs = fabrica.executaQuerieResultSet(sql);
+       Papel papel = this.extraiPapelResultSet(rs);
+       rs.close();
+       
+       return papel;
+
+
     }
 
-    public int getPapelCount() {
-        EntityManager em = getEntityManager();
-        try {
-            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<Papel> rt = cq.from(Papel.class);
-            cq.select(em.getCriteriaBuilder().count(rt));
-            Query q = em.createQuery(cq);
-            return ((Long) q.getSingleResult()).intValue();
-        } finally {
-            em.close();
-      
-        }
+public List<Papel> extrairListPapeisResultSet(ResultSet rs) throws SQLException{
+    
+    List<Papel> listaPapeis = new ArrayList();
+    
+    while(rs.next()){
+        
+        Papel papel = this.extraiPapelResultSet(rs);
+        listaPapeis.add(papel);
+        
     }
-
+    
+    return listaPapeis;
+    
+}
 
      public Papel extraiPapelResultSet(ResultSet rs) throws SQLException{
 

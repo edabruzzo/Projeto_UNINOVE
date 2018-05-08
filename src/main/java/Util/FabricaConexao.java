@@ -97,7 +97,7 @@ public class FabricaConexao {
         String sql21 = "ALTER TABLE tb_usuario_tb_gasto ADD CONSTRAINT FK_tb_usuario_tb_gasto_gastos_ID_GASTO FOREIGN KEY (gastos_ID_GASTO) REFERENCES tb_gasto (ID_GASTO);";
         listaSQLs.add(sql21);
 
-        String sql22 = "INSERT INTO tb_papel (ATIVO, DESCPAPEL, PRIVADMIN, PRIV_SUPERADMIN) VALUES (true, 'SUPER ADMINISTRAADOR', true, true);";
+        String sql22 = "INSERT INTO tb_papel (ATIVO, DESCPAPEL, PRIVADMIN, PRIV_SUPERADMIN) VALUES (true, 'SUPER_ADMINISTRADOR', true, true);";
         listaSQLs.add(sql22);
 
         String sql23 = "INSERT INTO tb_papel (ATIVO, DESCPAPEL, PRIVADMIN, PRIV_SUPERADMIN) VALUES (true, 'ADMINISTRADOR', true, false);";
