@@ -39,46 +39,38 @@ public class LocalDAO implements Serializable {
     @Inject
     FabricaConexao fabrica;
 
-    public void create(Local local) {
-        if (local.getGastos() == null) {
-            local.setGastos(new ArrayList<Gasto>());
+    public void create(Local local) throws SQLException, ClassNotFoundException {
+    
+        
+        ArrayList<String> listaSQLs = new ArrayList();
+        
+        String sql1 = "INSERT INTO tb_local(NOME, PROJETO_ID_PROJETO) "
+                + "VALUES ('"+local.getNome()
+                + "', "+local.getProjeto().getId_projeto()+");";
+        
+        listaSQLs.add(sql1);
+        
+        String sql2 = "INSERT INTO tb_projeto_tb_local "
+                + "(Projeto_ID_PROJETO, locais_ID_LOCAL) "
+                + "VALUES("+local.getProjeto().getId_projeto()+", "
+                + " (SELECT last_insert_id() FROM tb_local))";
+        
+        listaSQLs.add(sql2);
+        
+        
+        for (Gasto gasto : local.getGastos()){
+        
+         String sql3 = "INSERT INTO tb_local_tb_gasto ((Local_ID_LOCAL, "
+                 + "gastos_ID_GASTO) VALUES ((SELECT last_insert_id() FROM tb_local), "
+                 + gasto.getId_gasto()+");";
+         listaSQLs.add(sql3);
+            
         }
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Projeto projeto = local.getProjeto();
-            if (projeto != null) {
-                projeto = em.getReference(projeto.getClass(), projeto.getId_projeto());
-                local.setProjeto(projeto);
-            }
-            List<Gasto> attachedGastos = new ArrayList<Gasto>();
-            for (Gasto gastosGastoToAttach : local.getGastos()) {
-                gastosGastoToAttach = em.getReference(gastosGastoToAttach.getClass(), gastosGastoToAttach.getId_gasto());
-                attachedGastos.add(gastosGastoToAttach);
-            }
-            local.setGastos(attachedGastos);
-            em.persist(local);
-            if (projeto != null) {
-                projeto.getLocais().add(local);
-                projeto = em.merge(projeto);
-            }
-            for (Gasto gastosGasto : local.getGastos()) {
-                Local oldLocalOfGastosGasto = gastosGasto.getLocal();
-                gastosGasto.setLocal(local);
-                gastosGasto = em.merge(gastosGasto);
-                if (oldLocalOfGastosGasto != null) {
-                    oldLocalOfGastosGasto.getGastos().remove(gastosGasto);
-                    oldLocalOfGastosGasto = em.merge(oldLocalOfGastosGasto);
-                }
-            }
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-
-            }
-        }
+        
+        
+        fabrica.executaBatchUpdate(listaSQLs);
+        
+        
     }
 
     public void edit(Local local) throws NonexistentEntityException, Exception {
@@ -209,4 +201,21 @@ public class LocalDAO implements Serializable {
         return local;
     }
 
+    
+        public List<Local> extrairListaLocaisResultSet(ResultSet rs) throws SQLException, ClassNotFoundException {
+
+        List<Local> listaLocais = new ArrayList();
+
+        while (rs.next()) {
+            listaLocais.add(this.extraiLocalResultSet(rs));
+        }
+        rs.close();
+
+        return listaLocais;
+
+    }
+
+    
+    
+    
 }
