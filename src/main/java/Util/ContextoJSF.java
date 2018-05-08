@@ -6,6 +6,7 @@
 package Util;
 
 import DAO.UsuarioDAO;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Map;
 import javax.faces.application.FacesMessage;
@@ -17,7 +18,9 @@ import modelo.Usuario;
  *
  * @author Emm
  */
-public class ContextoJSF {
+public class ContextoJSF implements Serializable{
+
+    private static final long serialVersionUID = -1016411982404152393L;
 
     @Inject
     UsuarioDAO usuarioDAO;

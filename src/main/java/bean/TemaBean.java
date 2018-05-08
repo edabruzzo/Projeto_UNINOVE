@@ -1,10 +1,10 @@
 package bean;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
 
-@ManagedBean
-@SessionScoped
+@Named
+@ApplicationScoped
 public class TemaBean {
 	
 	private String tema = "vader";

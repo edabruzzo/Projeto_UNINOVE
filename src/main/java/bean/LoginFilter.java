@@ -13,9 +13,9 @@ import Util.CriptografiaSenha;
 import Util.FabricaConexao;
 import java.io.IOException;
 import java.sql.SQLException;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.Filter;
   import javax.servlet.FilterChain;
   import javax.servlet.FilterConfig;
@@ -33,8 +33,8 @@ import javax.servlet.Filter;
  *
  * @author Emm
  */
-@ManagedBean
-@SessionScoped
+@Named
+@ApplicationScoped
 public class LoginFilter implements Filter {
     
 private static final long serialVersionUID = 1L;

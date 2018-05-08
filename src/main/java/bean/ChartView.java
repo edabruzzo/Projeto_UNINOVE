@@ -6,16 +6,12 @@ package bean;
 import DAO.GastoDAO;
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 import modelo.Gasto;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
@@ -23,9 +19,11 @@ import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.DateAxis;
 import org.primefaces.model.chart.LineChartSeries;
  
-@ManagedBean
-@ViewScoped
+@Named
+@SessionScoped
 public class ChartView implements Serializable {
+
+    private static final long serialVersionUID = 2807916695948853240L;
  
     private LineChartModel animatedModel1;
     private boolean mostraGrafico = false;

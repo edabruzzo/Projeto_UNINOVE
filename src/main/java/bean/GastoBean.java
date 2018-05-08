@@ -10,14 +10,13 @@ import DAO.LocalDAO;
 import DAO.ProjetoDAO;
 import DAO.UsuarioDAO;
 import Util.ContextoJSF;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import modelo.Gasto;
 import modelo.Local;
 import modelo.Projeto;
@@ -29,9 +28,9 @@ import modelo.Usuario;
  *
  * @author Emm
  */
-@ManagedBean
+@Named
 @SessionScoped
-public class GastoBean {
+public class GastoBean implements Serializable{
     
     @Inject
     private Gasto gasto;
@@ -397,14 +396,13 @@ public class GastoBean {
                
         if  (!gravado){
             mensagem = "HOUVE UM PROBLEMA E O GASTO NÃO FOI GRAVADO";
-            FacesMessage fm = new FacesMessage(mensagem);
-             FacesContext.getCurrentInstance().addMessage("gravaGasto", fm);
+             contextoJSF.adicionaMensagem("erro", mensagem);
         }else {
             
             mensagem = "O GASTO FOI GRAVADO COM SUCESSO";
-            FacesMessage fm = new FacesMessage(mensagem);
-            FacesContext.getCurrentInstance().addMessage("gravaGasto", fm);
-               }
+            contextoJSF.adicionaMensagem("erro", mensagem);
+
+        }
         
        //this.gasto = new Gasto();
         }

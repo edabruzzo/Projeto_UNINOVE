@@ -22,6 +22,8 @@ import modelo.Usuario;
  */
 public class UsuarioDAO implements Serializable {
 
+    private static final long serialVersionUID = 8789325723266405542L;
+
     @Inject
     private FabricaConexao fabrica;
 

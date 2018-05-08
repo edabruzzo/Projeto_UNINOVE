@@ -6,20 +6,23 @@
 package bean;
 
 import DAO.ProjetoDAO;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 import modelo.Projeto;
 
 /**
  *
  * @author Emm
  */
-@ManagedBean
-@ViewScoped
-public class ProjetoBean {
+@Named
+@SessionScoped
+public class ProjetoBean implements Serializable{
+
+    private static final long serialVersionUID = 8173294256756299119L;
 
     /**
      * Creates a new instance of ProjetoBean

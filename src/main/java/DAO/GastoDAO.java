@@ -24,6 +24,9 @@ import modelo.Usuario;
  */
 public class GastoDAO implements Serializable {
 
+    private static final long serialVersionUID = 8185213676019293546L;
+
+    
     @Inject
     FabricaConexao fabrica;
 

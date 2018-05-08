@@ -22,6 +22,8 @@ import modelo.Local;
  */
 public class LocalDAO implements Serializable {
 
+    private static final long serialVersionUID = 7387911272507998729L;
+
     @Inject
     GastoDAO gastoDAO;
 

@@ -6,20 +6,19 @@
 package Util;
 
 import DAO.UsuarioDAO;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.faces.bean.ManagedBean;
 import modelo.Usuario;
 
 /**
  *
  * @author Emm
  */
-@ManagedBean
-public class CriptografiaSenha {
+public class CriptografiaSenha implements Serializable {
+
+    private static final long serialVersionUID = -1070161903182392139L;
     
              
             

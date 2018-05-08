@@ -5,6 +5,7 @@ package Util;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -19,7 +20,9 @@ import javax.inject.Inject;
  *
  * @author internet
  */
-public class FabricaConexao {
+public class FabricaConexao implements Serializable{
+
+    private static final long serialVersionUID = -6170720701523334179L;
 
     private String URL;
     

@@ -7,11 +7,12 @@ package bean;
 
 import DAO.LocalDAO;
 import DAO.ProjetoDAO;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 import modelo.Local;
 import modelo.Projeto;
 
@@ -19,9 +20,12 @@ import modelo.Projeto;
  *
  * @author Emm
  */
-@ManagedBean
-@ViewScoped
-public class LocalBean {
+
+@Named
+@SessionScoped
+public class LocalBean implements Serializable{
+
+    private static final long serialVersionUID = -716678353134143011L;
 
     /**
      * Creates a new instance of LocalBean

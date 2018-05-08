@@ -22,6 +22,8 @@ import modelo.Projeto;
  */
 public class ProjetoDAO implements Serializable {
 
+    private static final long serialVersionUID = -6130058936322421816L;
+
     @Inject
     LocalDAO localDAO;
     
