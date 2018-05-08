@@ -29,6 +29,9 @@ public class GastoDAO implements Serializable {
     
     @Inject
     UsuarioDAO usuarioDAO;
+    
+    @Inject
+    LocalDAO localDAO;
 
     public boolean criarGasto(Gasto gasto) throws ClassNotFoundException, SQLException {
 
@@ -131,29 +134,14 @@ public class GastoDAO implements Serializable {
       
       ResultSet rs = fabrica.executaQuerieResultSet(sql);
       List<Gasto> listaGastos = new ArrayList();
-      Gasto gasto = new Gasto();
-      Usuario usuario = new Usuario();
-      Local  local = new Local();
-      while(rs.next()){
+      
+                while(rs.next()){
+
+                    listaGastos.add(extraiGastoResultSet(rs));
+                }          
+    
+                return listaGastos;
           
-          gasto.setId_gasto(rs.getInt("id_gasto"));
-          gasto.setDataGasto(rs.getDate("DATAGASTO"));
-          gasto.setModalidadePagamento(rs.getString("MODALIDADEPAGAMENTO"));
-          gasto.setTipoGasto(rs.getString("TIPOGASTO"));
-          gasto.setValorGasto(rs.getDouble("VALORGASTO"));
-          
-          Usuario usuario = rs.getInt("USUARIO_IDUSUARIO");
-          ResultSet rs2 = fabrica.executaQuerieResultSet(sql2);
-          
-          
-              
-          }
-          
-          
-          
-          
-         
-        }
     }
     
     
@@ -693,4 +681,28 @@ q = em.createNativeQuery(sqlString, Gasto.class
               gb.mostraMensagemErro(mensagem);
           }
     
+
+
+     public Gasto extraiGastoResultSet(ResultSet rs) throws SQLException{
+        
+          Gasto gasto = new Gasto();
+          Usuario usuario = new Usuario();
+          Local  local = new Local();
+          gasto.setId_gasto(rs.getInt("id_gasto"));
+          gasto.setDataGasto(rs.getDate("DATAGASTO"));
+          gasto.setModalidadePagamento(rs.getString("MODALIDADEPAGAMENTO"));
+          gasto.setTipoGasto(rs.getString("TIPOGASTO"));
+          gasto.setValorGasto(rs.getDouble("VALORGASTO"));
+          
+          usuario = usuarioDAO.findUsuario(rs.getInt("USUARIO_IDUSUARIO"));
+          local = localDAO.findLocal(rs.getInt("LOCAL_ID_LOCAL"));
+          
+          gasto.setUsuario(usuario);
+          gasto.setLocal(local);
+              
+          return gasto;
+        }
+
+
+
 }
