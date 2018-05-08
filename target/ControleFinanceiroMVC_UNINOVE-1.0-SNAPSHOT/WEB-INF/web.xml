@@ -41,7 +41,7 @@
     
      <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
-        <url-pattern>restricted/*</url-pattern>
+        <url-pattern>/restricted/*</url-pattern>
     </servlet-mapping>
 
     
