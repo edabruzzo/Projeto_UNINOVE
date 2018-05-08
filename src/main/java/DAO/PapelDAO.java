@@ -5,6 +5,7 @@
  */
 package DAO;
 
+import Util.FabricaConexao;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,6 +16,7 @@ import javax.persistence.criteria.Root;
 import modelo.Usuario;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -28,13 +30,11 @@ import modelo.Papel;
 public class PapelDAO implements Serializable {
 
    
-    private EntityManagerFactory emf =  Persistence.createEntityManagerFactory( "ControleFinanceiroPU" );
-
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
-
+    @Inject
+    FabricaConexao fabrica;
+    
+    
+    
     public void create(Papel papel) {
         if (papel.getUsuario() == null) {
             papel.setUsuario(new ArrayList<Usuario>());
@@ -224,5 +224,19 @@ public class PapelDAO implements Serializable {
          return papel;
 
      }
+
+    Papel findPapelByUsuario(int idUsuario) throws SQLException, ClassNotFoundException {
+        
+
+        String sql = "SELECT * FROM tb_papel_tb_usuario  "
+                + "WHERE usuario_IDUSUARIO = "+idUsuario+";";
+                
+        ResultSet rs = fabrica.executaQuerieResultSet(sql);
+        Papel papel = this.extraiPapelResultSet(rs);
+        rs.close();
+        
+        return papel;
+
+    }
     
 }
