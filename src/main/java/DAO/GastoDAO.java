@@ -6,15 +6,18 @@
 package DAO;
 
 import DAO.exceptions.NonexistentEntityException;
+import Util.FabricaConexao;
 import bean.GastoBean;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -29,44 +32,58 @@ import modelo.Local;
  */
 public class GastoDAO implements Serializable {
 
-      private EntityManagerFactory emf =  Persistence.createEntityManagerFactory( "ControleFinanceiroPU" );
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
-
-    public boolean create(Gasto gasto) {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Usuario usuario = gasto.getUsuario();
-            if (usuario != null) {
-                usuario = em.getReference(usuario.getClass(), usuario.getIdUsuario());
-                gasto.setUsuario(usuario);
-            }
-            Local local = gasto.getLocal();
-            if (local != null) {
-                local = em.getReference(local.getClass(), local.getId_local());
-                gasto.setLocal(local);
-            }
-            em.persist(gasto);
-            if (usuario != null) {
-                usuario.getGastos().add(gasto);
-                usuario = em.merge(usuario);
-            }
-            if (local != null) {
-                local.getGastos().add(gasto);
-                local = em.merge(local);
-            }
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-               em.close();
+    @Inject    
+    FabricaConexao fabrica;
+    
+    
+    
+    public boolean criarGasto(Gasto gasto) throws ClassNotFoundException, SQLException {
         
-            }
+        
+            String sql1 = "INSERT INTO tb_gasto (DATAGASTO, "
+                    + "MODALIDADEPAGAMENTO, TIPOGASTO, VALORGASTO, "
+                    + "USUARIO_IDUSUARIO, LOCAL_ID_LOCAL) "
+                    + "VALUES ('"+gasto.getDataGasto()
+                    + "', '"+gasto.getModalidadePagamento()
+                    + "', "+gasto.getTipoGasto()
+                    + "', "+gasto.getValorGasto()
+                    + " , "+gasto.getUsuario().getIdUsuario()
+                    + " , "+gasto.getLocal().getId_local();
+        
+        
+        try {
+            fabrica.executaQuerieUpdate(sql1);
+        } catch (SQLException ex) {
+            Logger.getLogger(GastoDAO.class.getName()).log(Level.SEVERE, null, ex);
+            
+            return false;
         }
-        return true;
+
+            String sql2 = "INSERT INTO tb_usuario_tb_gasto (Usuario_IDUSUARIO, gastos_ID_GASTO) "
+                    + "VALUES ("+gasto.getUsuario().getIdUsuario()
+                    + " , (SELECT last_insert_id() FROM tb_gasto));";
+            
+            fabrica.executaQuerieUpdate(sql2);
+
+            String sql3 =  "INSERT INTO tb_usuario_tb_gasto (Usuario_IDUSUARIO, gastos_ID_GASTO) "
+                    + "VALUES ("+gasto.getUsuario().getIdUsuario()
+                    + " , (SELECT last_insert_id() FROM tb_gasto));";
+           
+            fabrica.executaQuerieUpdate(sql3);
+            
+            
+            String sql4 = "INSERT INTO tb_local_tb_gasto (Local_ID_LOCAL, gastos_ID_GASTO) "
+                    + "VALUES ((SELECT last_insert_id() FROM tb_gasto), "+gasto.getLocal().getId_local()
+                    + " );";
+            
+            fabrica.executaQuerieUpdate(sql4);
+        
+            
+            return true;
+            
+        }
+    
+        
     }
 
     public void edit(Gasto gasto) throws NonexistentEntityException, Exception {

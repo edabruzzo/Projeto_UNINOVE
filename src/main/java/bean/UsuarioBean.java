@@ -8,7 +8,7 @@ package bean;
 import DAO.PapelDAO;
 import DAO.UsuarioDAO;
 import DAO.exceptions.NonexistentEntityException;
-import Default.CriptografiaSenha;
+import Util.CriptografiaSenha;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;

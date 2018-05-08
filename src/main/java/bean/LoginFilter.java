@@ -8,7 +8,7 @@ package bean;
 
 
 import DAO.UsuarioDAO;
-import Default.CriptografiaSenha;
+import Util.CriptografiaSenha;
 import java.io.IOException;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;

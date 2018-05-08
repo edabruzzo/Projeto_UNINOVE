@@ -6,7 +6,7 @@
 package DAO;
 
 import DAO.exceptions.NonexistentEntityException;
-import Default.FabricaConexao;
+import Util.FabricaConexao;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -81,67 +81,12 @@ public class UsuarioDAO implements Serializable {
             
             fabrica.executaQuerieUpdate(sql2);
                 
-            }
-                
-                
             
-            List<Gasto> gastosOld = persistentUsuario.getGastos();
-            List<Gasto> gastosNew = usuario.getGastos();
-            if (papelNew != null) {
-                papelNew = em.getReference(papelNew.getClass(), papelNew.getIdPapel());
-                usuario.setPapel(papelNew);
-            }
-            List<Gasto> attachedGastosNew = new ArrayList<Gasto>();
-            for (Gasto gastosNewGastoToAttach : gastosNew) {
-                gastosNewGastoToAttach = em.getReference(gastosNewGastoToAttach.getClass(), gastosNewGastoToAttach.getId_gasto());
-                attachedGastosNew.add(gastosNewGastoToAttach);
-            }
-            gastosNew = attachedGastosNew;
-            usuario.setGastos(gastosNew);
-            usuario = em.merge(usuario);
-            if (papelOld != null && !papelOld.equals(papelNew)) {
-                papelOld.getUsuario().remove(usuario);
-                papelOld = em.merge(papelOld);
-            }
-            if (papelNew != null && !papelNew.equals(papelOld)) {
-                papelNew.getUsuario().add(usuario);
-                papelNew = em.merge(papelNew);
-            }
-            for (Gasto gastosOldGasto : gastosOld) {
-                if (!gastosNew.contains(gastosOldGasto)) {
-                    gastosOldGasto.setUsuario(null);
-                    gastosOldGasto = em.merge(gastosOldGasto);
-                }
-            }
-            for (Gasto gastosNewGasto : gastosNew) {
-                if (!gastosOld.contains(gastosNewGasto)) {
-                    Usuario oldUsuarioOfGastosNewGasto = gastosNewGasto.getUsuario();
-                    gastosNewGasto.setUsuario(usuario);
-                    gastosNewGasto = em.merge(gastosNewGasto);
-                    if (oldUsuarioOfGastosNewGasto != null && !oldUsuarioOfGastosNewGasto.equals(usuario)) {
-                        oldUsuarioOfGastosNewGasto.getGastos().remove(gastosNewGasto);
-                        oldUsuarioOfGastosNewGasto = em.merge(oldUsuarioOfGastosNewGasto);
-                    }
-                }
-            }
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            String msg = ex.getLocalizedMessage();
-            if (msg == null || msg.length() == 0) {
-                int id = usuario.getIdUsuario();
-                if (findUsuario(id) == null) {
-                    throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.");
-                }
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-              em.close();
-          
-            }
-        }
     }
-
+                
+          
+            
+    
     public void removerUsuario(int id) throws NonexistentEntityException {
         EntityManager em = null;
         try {

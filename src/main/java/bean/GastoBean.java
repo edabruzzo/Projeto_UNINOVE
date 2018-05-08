@@ -420,7 +420,7 @@ public class GastoBean {
             FacesMessage fm = new FacesMessage(mensagem1);
              FacesContext.getCurrentInstance().addMessage("gravaGasto", fm);
         }else{
-         gravado =  gastoDAO.create(gasto);
+         gravado =  gastoDAO.criarGasto(gasto);
          this.listaGastosTotais = gastoDAO.listaGastosByConsultaSQL();
         }
          String mensagem = null;
