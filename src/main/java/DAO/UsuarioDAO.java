@@ -14,7 +14,6 @@ import modelo.Gasto;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import static modelo.Gasto_.usuario;
 import modelo.Usuario;
 
 /**
@@ -136,123 +135,61 @@ public void removerUsuario(int id) throws SQLException, ClassNotFoundException {
             fabrica.executaBatchUpdate(listaSQLs);
     }
 
-    public List<Usuario> consultaUsuarios() {
+    public List<Usuario> consultaUsuarios() throws ClassNotFoundException, SQLException {
    
         String sql = "SELECT * FROM tb_usuario;";
         
+        ResultSet rs = fabrica.executaQuerieResultSet(sql);
+        return this.extrairListaUsuariosResultSet(rs);
         
     
-    
-    
-    
     }
-    public Usuario findUsuario(int id) {
-        EntityManager em = getEntityManager();
+
+
+    public Usuario findUsuario(int id) throws ClassNotFoundException, SQLException {
+
+
+        String sql = "SELECT * FROM tb_usuario WHERE id_usuario = "
+                +id+";";
         
+        ResultSet rs = fabrica.executaQuerieResultSet(sql);
+        Usuario usuario = this.extraiUsuarioResultSet(rs);
+        rs.close();
+        
+        return usuario;
 
-
-
-try {
-            return em.find(Usuario.class
-
-, id);
-        } finally {
-            em.close();
-
-        }
     }
 
-    public int getUsuarioCount() {
-        EntityManager em = getEntityManager();
-        try {
-            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root
 
-
-
-<Usuario> rt = cq.from(Usuario.class
-
-);
-            cq.select(em.getCriteriaBuilder().count(rt));
-            Query q = em.createQuery(cq);
-            return ((Long) q.getSingleResult()).intValue();
-        } finally {
-            em.close();
-
-        }
-    }
-
-    public Usuario findByLoginSenha(String login, String senha) {
-
-        Usuario usuario = new Usuario();
-        EntityManager em = getEntityManager();
-        List<Usuario> listaUsuarios = new ArrayList();
-        listaUsuarios = consultaUsuarios();
-        if (listaUsuarios != null || !listaUsuarios.isEmpty()) {
+    public Usuario findByLoginSenha(String login, String senha) throws ClassNotFoundException, SQLException {
 
             String sql = "SELECT * FROM tb_usuario WHERE LOGIN LIKE '"
                     + login + "' AND PASSWORD LIKE '" + senha + "'";
 
-            Query 
-
-
-
-q = em.createNativeQuery(sql, Usuario.class
-
-);
-
-            try {
-                Object o = q.getSingleResult();
-                usuario = (Usuario) o;
-            } catch (NoResultException e) {
-
-                apresentaMensagemErro("validaAcesso", "USUÁRIO NÃO ENCONTRADO");
-                e.printStackTrace();
-                return null;
-
-            } finally {
-
-                em.close();
-
-            }
-        }
-        return usuario;
+            ResultSet rs = fabrica.executaQuerieResultSet(sql);
+            Usuario usuario  = this.extraiUsuarioResultSet(rs);
+            rs.close();
+            
+            return usuario;
 
     }
+    
+    
 
-    public Usuario findByLogin(String login) {
-        Usuario usuario = new Usuario();
-        EntityManager em = getEntityManager();
-
+    public Usuario findByLogin(String login) throws ClassNotFoundException, SQLException {
+    
+    
         String sql = "SELECT * FROM tb_usuario WHERE LOGIN LIKE '"
                 + login + "'";
 
-        Query 
-
-
-
-q = em.createNativeQuery(sql, Usuario.class
-
-);
-
-        try {
-            Object o = q.getSingleResult();
-            usuario = (Usuario) o;
-        } catch (NoResultException e) {
-
-            String mensagem = "USUÁRIO NÃO ENCONTRADO" + e.getMessage();
-
-            apresentaMensagemErro("solicitaSenha", mensagem);
-            return null;
-
-        } finally {
-
-            em.close();
-
-        }
+        ResultSet rs = fabrica.executaQuerieResultSet(sql);
+        Usuario usuario = this.extraiUsuarioResultSet(rs);
+        rs.close();
+        
         return usuario;
 
     }
+
 
     public Usuario extraiUsuarioResultSet(ResultSet rs) throws SQLException, ClassNotFoundException {
 
