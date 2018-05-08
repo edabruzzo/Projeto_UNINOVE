@@ -7,41 +7,25 @@ package modelo;
 
 import java.io.Serializable;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 
 
 /**
  *
  * @author Emm
  */
-@Entity
-@Table (name  = "tb_projeto")
 public class Projeto implements Serializable {
     
-    @Id 
-    @GeneratedValue (strategy = GenerationType.SEQUENCE)
     private int id_projeto;
     
-    @Column(nullable=false, unique=true)
     private String nome;
     
-     @Column(nullable=false)
     private String status;
     
      
     private boolean ativo;
     
-    @Column(nullable=false)
     private String prioridade;
     
-    @OneToMany
     private List<Local> locais;
     
   

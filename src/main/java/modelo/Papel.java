@@ -7,34 +7,22 @@ package modelo;
 
 import java.io.Serializable;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 /**
  *
  * @author Emm
  */
-@Entity
-@Table (name = "tb_papel")
 public class Papel implements Serializable {
     
-    @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE)
     private int idPapel;
-   
-    @Column(nullable=false)
+
     private String descPapel;
     
     private boolean ativo = true;
     
     private boolean privAdmin = false;
     
-    @Column(name="PRIV_SUPERADMIN")
     private boolean privSuperAdmin = false;
 
     public boolean isPrivSuperAdmin() {

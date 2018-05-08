@@ -7,47 +7,26 @@ package modelo;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.Transient;
 
 /**
  *
  * @author Emm
  */
-@Entity
-@Table (name = "tb_gasto" )
 public class Gasto implements Serializable{
     
-        @GeneratedValue(strategy = GenerationType.SEQUENCE)
-        @Id
         private int id_gasto;
         
-        @Column(nullable=false)
         private String tipoGasto;
 
-        @OneToOne
         private Local local;
         
        
-        @Temporal(javax.persistence.TemporalType.DATE)
-        @Column(nullable=false)
         private Date dataGasto;
         
-        @Column(nullable=false)
         private double valorGasto;
         
-        @ManyToOne
         private Usuario usuario;
         
-        @Column(nullable=false)
         private String modalidadePagamento;
         
        
@@ -111,7 +90,6 @@ public class Gasto implements Serializable{
     public void setDataGasto(Date dataGasto) {
         this.dataGasto = dataGasto;
     }
-        
         
            
     
