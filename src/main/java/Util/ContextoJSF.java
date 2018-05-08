@@ -19,19 +19,19 @@ public class ContextoJSF {
         switch (severidade) {
 
             case "sucesso":
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, severidade, mensagem));
+                FacesContext.getCurrentInstance().addMessage("mensagens-erro", new FacesMessage(FacesMessage.SEVERITY_INFO, severidade, mensagem));
 
             case "alerta":
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, severidade, mensagem));
+                FacesContext.getCurrentInstance().addMessage("mensagens-erro", new FacesMessage(FacesMessage.SEVERITY_WARN, severidade, mensagem));
 
             case "erro":
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, severidade, mensagem));
+                FacesContext.getCurrentInstance().addMessage("mensagens-erro", new FacesMessage(FacesMessage.SEVERITY_ERROR, severidade, mensagem));
 
             case "fatal":
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, severidade, mensagem));
+                FacesContext.getCurrentInstance().addMessage("mensagens-erro", new FacesMessage(FacesMessage.SEVERITY_FATAL, severidade, mensagem));
 
             default:
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, severidade, mensagem));
+                FacesContext.getCurrentInstance().addMessage("mensagens-erro", new FacesMessage(FacesMessage.SEVERITY_INFO, severidade, mensagem));
 
         }
 

@@ -5,8 +5,11 @@
  */
 package DAO;
 
-import DAO.exceptions.NonexistentEntityException;
+
+import Util.FabricaConexao;
 import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
@@ -15,6 +18,7 @@ import javax.persistence.criteria.Root;
 import modelo.Local;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import modelo.Projeto;
@@ -25,13 +29,14 @@ import modelo.Projeto;
  */
 public class ProjetoDAO implements Serializable {
 
-       private EntityManagerFactory emf =  Persistence.createEntityManagerFactory( "ControleFinanceiroPU" );
-
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
-    }
-
+    @Inject
+    LocalDAO localDAO;
+    
+    @Inject
+    FabricaConexao fabrica;
+    
+    
+    
     public void create(Projeto projeto) {
         if (projeto.getLocais() == null) {
             projeto.setLocais(new ArrayList<Local>());
@@ -116,56 +121,33 @@ public class ProjetoDAO implements Serializable {
         }
     }
 
-    public void destroy(int id) throws NonexistentEntityException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Projeto projeto;
-            try {
-                projeto = em.getReference(Projeto.class, id);
-                projeto.getId_projeto();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The projeto with id " + id + " no longer exists.", enfe);
-            }
-            List<Local> locais = projeto.getLocais();
-            for (Local locaisLocal : locais) {
-                locaisLocal.setProjeto(null);
-                locaisLocal = em.merge(locaisLocal);
-            }
-            em.remove(projeto);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-           
-            }
-        }
+    public void destroy(int id) throws SQLException, ClassNotFoundException {
+        
+        ArrayList<String> listaSQLs = new ArrayList();
+        String sql = "DELETE FROM tb_local WHERE PROJETO_ID_PROJETO = "+id+";";
+        listaSQLs.add(sql);
+        
+        String sql2 = "DELETE FROM tb_projeto_tb_local WHERE PROJETO_ID_PROJETO = "+id+";";
+        listaSQLs.add(sql2);
+        
+        String sql3 = "DELETE FROM tb_projeto WHERE ID_PROJETO = "+id+";";
+        listaSQLs.add(sql3);
+        
+        fabrica.executaBatchUpdate(listaSQLs);
+        
+
     }
 
     public List<Projeto> findProjetoEntities() {
-        return findProjetoEntities(true, -1, -1);
-    }
 
-    public List<Projeto> findProjetoEntities(int maxResults, int firstResult) {
-        return findProjetoEntities(false, maxResults, firstResult);
-    }
+       
+        String sql = "SELECT * FROM tb_projeto;";
+        
+        fabrica.executaQuerieSemResultado(sql);
 
-    private List<Projeto> findProjetoEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            cq.select(cq.from(Projeto.class));
-            Query q = em.createQuery(cq);
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
-          
-        }
+
+
+
     }
 
     public Projeto findProjeto(int id) {
@@ -191,5 +173,24 @@ public class ProjetoDAO implements Serializable {
            
         }
     }
+
+
+        public Projeto extraiProjetoResultSet(ResultSet rs) throws ClassNotFoundException, SQLException{
+            
+            Projeto projeto = new Projeto();
+            
+            projeto.setId_projeto(rs.getInt("ID_PROJETO"));
+            projeto.setNome(rs.getString("NOME"));
+            projeto.setAtivo(rs.getBoolean("ATIVO"));
+            projeto.setPrioridade(rs.getString("PRIORIDADE"));
+            projeto.setStatus(rs.getString("STATUS_PROJETO"));
+                        
+            projeto.setLocais(localDAO.findLocalByProjeto(projeto.getId_projeto()));
+            
+            return projeto;
+        }
+
+
+
     
 }

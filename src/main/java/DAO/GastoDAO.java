@@ -79,6 +79,8 @@ public class GastoDAO implements Serializable {
 
     public void edit(Gasto gasto) throws  SQLException, ClassNotFoundException {
 
+        ArrayList<String> listaSQLs = new ArrayList();
+        
         String sql1 = "UPDATE tb_gasto "
                     + " SET DATAGASTO = '"+gasto.getDataGasto()
                 + "', MODALIDADEPAGAMENTO = '"+gasto.getModalidadePagamento()
@@ -88,40 +90,46 @@ public class GastoDAO implements Serializable {
                 + ", LOCAL_ID_LOCAL = "+gasto.getLocal().getId_local()
                 + "WHERE ID_GASTO = "+gasto.getId_gasto()+";";
         
-            fabrica.executaQuerieUpdate(sql1);
-            
+        listaSQLs.add(sql1);
+        
             String sql2 = "UPDATE tb_usuario_tb_gasto "
                     + " SET USUARIO_IDUSUARIO = "+gasto.getUsuario().getIdUsuario()
                     + " WHERE GASTOS_ID_GASTO = "+gasto.getId_gasto()+" ;";
             
-            fabrica.executaQuerieUpdate(sql2);
-        
+        listaSQLs.add(sql2);
+
             String sql3 = "UPDATE tb_local_tb_gasto "
                     + " SET Local_ID_LOCAL = "+gasto.getLocal().getId_local()
                     + " WHERE gastos_ID_GASTO = "+gasto.getId_gasto()+";";
             
-            fabrica.executaQuerieUpdate(sql3);
-        
+        listaSQLs.add(sql3);
 
-            }
+        fabrica.executaBatchUpdate(listaSQLs);
+
+            
+        }
     
     
 
     public void destroy(int id) throws ClassNotFoundException, SQLException {
         
-        String sql = "DELETE FROM tb_gasto WHERE id_gasto = "+id+";";
+        ArrayList<String> listaSQLs = new ArrayList();
         
-        fabrica.executaQuerieSemResultado(sql);
+        String sql1 = "DELETE FROM tb_usuario_tb_gasto WHERE gastos_ID_GASTO = "
+                + id + ";";
+        listaSQLs.add(sql1);
         
-        String sql2 = "DELETE FROM tb_usuario_tb_gasto WHERE gastos_ID_GASTO = "
+        String sql2 = "DELETE FROM tb_local_tb_gasto WHERE gastos_ID_GASTO = "
                 + id + ";";
         
-        fabrica.executaQuerieUpdate(sql2);
+        listaSQLs.add(sql2);
+
+        String sql3 = "DELETE FROM tb_gasto WHERE id_gasto = "+id+";";
         
-        String sql3 = "DELETE FROM tb_local_tb_gasto WHERE gastos_ID_GASTO = "
-                + id + ";";
+        listaSQLs.add(sql3);
+
         
-        fabrica.executaQuerieUpdate(sql3);
+        fabrica.executaBatchUpdate(listaSQLs);
 
                 
       
@@ -133,6 +141,7 @@ public class GastoDAO implements Serializable {
       String sql = "SELECT * FROM tb_gasto;";
       
       ResultSet rs = fabrica.executaQuerieResultSet(sql);
+      
       List<Gasto> listaGastos = new ArrayList();
       
                 while(rs.next()){
@@ -146,7 +155,8 @@ public class GastoDAO implements Serializable {
     
     
     public Gasto findGasto(int id) {
-        EntityManager em = getEntityManager();
+       
+        String
         
 
 
@@ -652,7 +662,8 @@ q = em.createNativeQuery(sqlString, Gasto.class
            return resultado;
         
             }
-          public void apresentaMensagem(){
+          
+            public void apresentaMensagem(){
               GastoBean gb = new GastoBean();
               String mensagem = "NÃO FOI POSSÍVEL ENCONTRAR GASTOS PARA O CRITÉRIO INFORMADO";
               gb.mostraMensagemErro(mensagem);
@@ -683,7 +694,7 @@ q = em.createNativeQuery(sqlString, Gasto.class
     
 
 
-     public Gasto extraiGastoResultSet(ResultSet rs) throws SQLException{
+     public Gasto extraiGastoResultSet(ResultSet rs) throws SQLException, ClassNotFoundException{
         
           Gasto gasto = new Gasto();
           Usuario usuario = new Usuario();
@@ -699,8 +710,9 @@ q = em.createNativeQuery(sqlString, Gasto.class
           
           gasto.setUsuario(usuario);
           gasto.setLocal(local);
-              
+          
           return gasto;
+          
         }
 
 

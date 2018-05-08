@@ -5,6 +5,7 @@
  */
 package DAO;
 
+import Util.FabricaConexao;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,9 +32,12 @@ public class LocalDAO implements Serializable {
 
     @Inject
     GastoDAO gastoDAO;
-    
+
     @Inject
     ProjetoDAO projetoDAO;
+
+    @Inject
+    FabricaConexao fabrica;
 
     public void create(Local local) {
         if (local.getGastos() == null) {
@@ -71,8 +75,8 @@ public class LocalDAO implements Serializable {
             em.getTransaction().commit();
         } finally {
             if (em != null) {
-              em.close();
-         
+                em.close();
+
             }
         }
     }
@@ -137,117 +141,72 @@ public class LocalDAO implements Serializable {
         } finally {
             if (em != null) {
                 em.close();
-          
+
             }
         }
     }
 
-    public void destroy(int id) throws NonexistentEntityException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Local local;
-            try {
-                local = em.getReference(Local.class, id);
-                local.getId_local();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The local with id " + id + " no longer exists.", enfe);
-            }
-            Projeto projeto = local.getProjeto();
-            if (projeto != null) {
-                projeto.getLocais().remove(local);
-                projeto = em.merge(projeto);
-            }
-            List<Gasto> gastos = local.getGastos();
-            for (Gasto gastosGasto : gastos) {
-                gastosGasto.setLocal(null);
-                gastosGasto = em.merge(gastosGasto);
-            }
-            em.remove(local);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-              em.close();
-         
-            }
-        }
-    }
+    public void destroy(int id) {
 
-    public List<Local> findLocalEntities() {
-        return findLocalEntities(true, -1, -1);
-    }
-
-    public List<Local> findLocalEntities(int maxResults, int firstResult) {
-        return findLocalEntities(false, maxResults, firstResult);
-    }
-
-    private List<Local> findLocalEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            cq.select(cq.from(Local.class));
-            Query q = em.createQuery(cq);
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
-          
-        }
-    }
-
-    public Local findLocal(int id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(Local.class, id);
-        } finally {
-            em.close();
-          
-        }
-    }
-
-    public int getLocalCount() {
-        EntityManager em = getEntityManager();
-        try {
-            CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<Local> rt = cq.from(Local.class);
-            cq.select(em.getCriteriaBuilder().count(rt));
-            Query q = em.createQuery(cq);
-            return ((Long) q.getSingleResult()).intValue();
-        } finally {
-            em.close();
-          
-        }
-    }
-    
-
-
-
-
-
-
-     public Local extraiLocalResultSet(ResultSet rs) throws SQLException{
+        String sql1 = "DELETE FROM tb_local WHERE "
         
-          Local  local = new Local();
-          Projeto projeto = new Projeto();
-          
-          local.setId_local(rs.getInt("ID_LOCAL"));
-          local.setNome(rs.getString("NOME"));
-          
-          local.setGastos(gastoDAO.listaGastosByLocal(rs.getInt("ID_LOCAL")));
-          
-          projeto = projetoDAO.findProjeto(rs.getInt("PROJETO_ID_PROJETO "));
-          
-          local.setProjeto(projeto);
-       
-          return local;
+        
+    }
+
+    public List<Local> findLocalEntities() throws SQLException, ClassNotFoundException {
+
+        String sql = "SELECT * FROM tb_local;";
+        ResultSet rs = fabrica.executaQuerieResultSet(sql);
+        List<Local> listaLocais = new ArrayList();
+
+        while (rs.next()) {
+
+            listaLocais.add(extraiLocalResultSet(rs));
+
         }
+
+        return listaLocais;
+    }
+
+    public Local findLocal(int id) throws ClassNotFoundException, SQLException {
+
+        String sql = "SELECT * FROM tb_local WHERE ID_LOCAL = " + id
+                + ";";
+        ResultSet rs = fabrica.executaQuerieResultSet(sql);
+        Local local = new Local();
+
+        local = extraiLocalResultSet(rs);
+
+        return local;
+    }
+
+    public Local extraiLocalResultSet(ResultSet rs) throws SQLException {
+
+        Local local = new Local();
+        Projeto projeto = new Projeto();
+
+        local.setId_local(rs.getInt("ID_LOCAL"));
+        local.setNome(rs.getString("NOME"));
+
+        local.setGastos(gastoDAO.listaGastosByLocal(rs.getInt("ID_LOCAL")));
+
+        projeto = projetoDAO.findProjeto(rs.getInt("PROJETO_ID_PROJETO "));
+
+        local.setProjeto(projeto);
+
+        return local;
+    }
+
+    public List<Local> findLocalByProjeto(int id_projeto) throws ClassNotFoundException, SQLException {
+
+        String sql = "SELECT * FROM tb_local WHERE PROJETO_ID_PROJETO  = " + id_projeto + ";";
+        ResultSet rs = fabrica.executaQuerieResultSet(sql);
+
+        Local local = new Local();
+
+        local = extraiLocalResultSet(rs);
+
+        return local;
+    }
 
 }
-
-
-
-

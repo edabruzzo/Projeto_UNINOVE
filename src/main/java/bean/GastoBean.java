@@ -9,7 +9,7 @@ import DAO.GastoDAO;
 import DAO.LocalDAO;
 import DAO.ProjetoDAO;
 import DAO.UsuarioDAO;
-import DAO.exceptions.NonexistentEntityException;
+import Util.ContextoJSF;
 import java.util.List;
 import java.util.Locale;
 import javax.annotation.PostConstruct;
@@ -18,6 +18,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import modelo.Gasto;
 import modelo.Local;
 import modelo.Projeto;
@@ -58,8 +59,12 @@ public class GastoBean {
     private double gastosTotais;
    private List<Gasto> listaGastosPesquisa;
    private boolean mostraTotal = false;
-
-    public boolean isMostraTotal() {
+   
+   @Inject
+   private ContextoJSF contextoJSF;
+   
+   
+   public boolean isMostraTotal() {
         return mostraTotal;
     }
 
@@ -259,9 +264,7 @@ public class GastoBean {
     public void mostraMensagemErro(String message){
         
     this.houveErro = true;
-    FacesMessage fm = new FacesMessage( message);
-    FacesContext.getCurrentInstance().addMessage("tabelaGastosPesquisados", fm);
-    
+    contextoJSF.adicionaMensagem("erro", message);
     
     }
     
