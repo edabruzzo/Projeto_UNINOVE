@@ -14,9 +14,8 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import modelo.Gasto;
 import modelo.Local;
 import modelo.Projeto;
@@ -28,16 +27,18 @@ import modelo.Usuario;
  *
  * @author Emm
  */
-@Named
+@ManagedBean
 @SessionScoped
 public class GastoBean implements Serializable{
+
+    private static final long serialVersionUID = 1137446474255371332L;
     
-    @Inject
-    private Gasto gasto;
-    @Inject 
-    private Local local;
-    @Inject
-    private Usuario usuario;
+    private Gasto gasto = new Gasto();
+
+    private Local local = new Local();
+   private ContextoJSF contextoJSF = new ContextoJSF();
+    private Usuario usuario = new Usuario();
+
     private int projetoID;
     private int localID;
     //este é o usuário logado
@@ -60,8 +61,7 @@ public class GastoBean implements Serializable{
    private List<Gasto> listaGastosPesquisa;
    private boolean mostraTotal = false;
    
-   @Inject
-   private ContextoJSF contextoJSF;
+
    
    
    public boolean isMostraTotal() {
@@ -253,7 +253,7 @@ public class GastoBean implements Serializable{
     public void mostraMensagemErro(String message){
         
     this.houveErro = true;
-    contextoJSF.adicionaMensagem("erro", message);
+    this.contextoJSF.adicionaMensagem("erro", message);
     
     }
     

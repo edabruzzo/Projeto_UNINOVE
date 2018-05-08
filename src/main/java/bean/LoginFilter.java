@@ -13,9 +13,9 @@ import Util.CriptografiaSenha;
 import Util.FabricaConexao;
 import java.io.IOException;
 import java.sql.SQLException;
-import javax.enterprise.context.ApplicationScoped;
+import javax.faces.bean.ApplicationScoped;
+import javax.faces.bean.ManagedBean;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.servlet.Filter;
   import javax.servlet.FilterChain;
   import javax.servlet.FilterConfig;
@@ -33,7 +33,7 @@ import javax.servlet.Filter;
  *
  * @author Emm
  */
-@Named
+@ManagedBean
 @ApplicationScoped
 public class LoginFilter implements Filter {
     
@@ -41,19 +41,15 @@ private static final long serialVersionUID = 1L;
 
 private  boolean permiteAcesso = false;
 
-private boolean mostrarBotaoCriarInfra = false;
 
 
  private static Usuario usuario = new Usuario();
   
-@Inject  
-ContextoJSF contextoJSF;
+ContextoJSF contextoJSF = new ContextoJSF();
 
-@Inject
-UsuarioDAO usuarioDAO;
+UsuarioDAO usuarioDAO = new UsuarioDAO();
 
-@Inject
-FabricaConexao fabricaConexao;
+FabricaConexao fabricaConexao = new FabricaConexao();
 
 
     public boolean isPermiteAcesso() {
@@ -313,19 +309,6 @@ FabricaConexao fabricaConexao;
    
            }
 
-    public boolean isMostrarBotaoCriarInfra() throws ClassNotFoundException, SQLException {
-        
-        
-        Usuario usuario = usuarioDAO.findByLogin("SUPERADMIN");
-        
-        if(usuario == null){
-            
-            mostrarBotaoCriarInfra = true;
-        }
-        return mostrarBotaoCriarInfra;
-    }
-    
-       
-          
-   
+
+  
   }

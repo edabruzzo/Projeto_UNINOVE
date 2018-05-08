@@ -10,15 +10,15 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import modelo.Projeto;
 
 /**
  *
  * @author Emm
  */
-@Named
+@ManagedBean
 @SessionScoped
 public class ProjetoBean implements Serializable{
 

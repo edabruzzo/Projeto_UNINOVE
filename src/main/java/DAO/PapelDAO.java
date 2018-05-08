@@ -23,9 +23,8 @@ public class PapelDAO implements Serializable {
     private static final long serialVersionUID = 618298451758930316L;
 
    
-    @Inject
-    FabricaConexao fabrica;
-    
+      FabricaConexao fabrica = new FabricaConexao();
+  
     
 
 

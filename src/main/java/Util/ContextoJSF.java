@@ -22,8 +22,8 @@ public class ContextoJSF implements Serializable{
 
     private static final long serialVersionUID = -1016411982404152393L;
 
-    @Inject
-    UsuarioDAO usuarioDAO;
+
+    UsuarioDAO usuarioDAO = new UsuarioDAO();
 
     public void adicionaMensagem(String severidade, String mensagem) {
 

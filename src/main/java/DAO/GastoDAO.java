@@ -27,14 +27,12 @@ public class GastoDAO implements Serializable {
     private static final long serialVersionUID = 8185213676019293546L;
 
     
-    @Inject
-    FabricaConexao fabrica;
+ 
+    FabricaConexao fabrica = new FabricaConexao();
 
-    @Inject
-    UsuarioDAO usuarioDAO;
+    UsuarioDAO usuarioDAO = new UsuarioDAO();
 
-    @Inject
-    LocalDAO localDAO;
+    LocalDAO localDAO = new LocalDAO();
 
     public boolean criarGasto(Gasto gasto) throws ClassNotFoundException, SQLException {
 

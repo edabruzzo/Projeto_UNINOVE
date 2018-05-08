@@ -13,7 +13,8 @@ import modelo.Papel;
 import modelo.Gasto;
 import java.util.ArrayList;
 import java.util.List;
-import javax.inject.Inject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import modelo.Usuario;
 
 /**
@@ -24,14 +25,12 @@ public class UsuarioDAO implements Serializable {
 
     private static final long serialVersionUID = 8789325723266405542L;
 
-    @Inject
-    private FabricaConexao fabrica;
 
-    @Inject
-    PapelDAO papelDAO;
+    FabricaConexao fabrica = new FabricaConexao();
 
-    @Inject
-    GastoDAO gastoDAO;
+    PapelDAO papelDAO = new PapelDAO();
+
+    GastoDAO gastoDAO = new GastoDAO();
 
     public void criarUsuario(Usuario usuario) throws ClassNotFoundException, SQLException {
 
@@ -183,8 +182,13 @@ public void removerUsuario(int id) throws SQLException, ClassNotFoundException {
     
         String sql = "SELECT * FROM tb_usuario WHERE LOGIN LIKE '"
                 + login + "'";
-
-        ResultSet rs = fabrica.executaQuerieResultSet(sql);
+        
+        ResultSet rs = null;
+        try {
+            rs = fabrica.executaQuerieResultSet(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
         Usuario usuario = this.extraiUsuarioResultSet(rs);
         rs.close();
         

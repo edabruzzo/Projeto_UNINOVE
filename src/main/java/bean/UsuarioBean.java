@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.bean.ManagedBean;
 import javax.inject.Named;
 import modelo.Papel;
 import modelo.Usuario;
@@ -21,8 +22,8 @@ import modelo.Usuario;
  * @author Emm
  */
 
-@Named
-@SessionScoped
+@ManagedBean
+@javax.faces.bean.SessionScoped
 public class UsuarioBean implements Serializable{
 
     private static final long serialVersionUID = -7444696162507993250L;

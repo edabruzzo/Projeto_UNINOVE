@@ -38,8 +38,8 @@
         <p:password id="password" value="#{loginFilter.usuario.password}" 
                     required="true" feedback="true"/>
         <p:commandButton action="#{loginFilter.criarInfraestrutura()}" 
-                         value="CRIAR INFRAESTRUTURA - PRIMEIRO ACESSO" id="criaInfra"
-                         rendered="#{loginFilter.mostrarBotaoCriarInfra}"></p:commandButton>
+                         value="CRIAR INFRAESTRUTURA - PRIMEIRO ACESSO" id="criaInfra">
+        </p:commandButton>
         <p:commandButton action="#{loginFilter.validaAcesso()}" value="Login" id="validaAcesso"></p:commandButton>
         <!--<p:commandButton action="#{loginFilter.solicitarNovaSenha()}" 
                          value="Solicitar Nova Senha" id="solicitaSenha" 

@@ -13,6 +13,8 @@ import java.util.List;
  * @author Emm
  */
 public class Local implements Serializable{
+
+    private static final long serialVersionUID = 4725506891615545706L;
     
     private int id_local;
     

@@ -24,14 +24,12 @@ public class LocalDAO implements Serializable {
 
     private static final long serialVersionUID = 7387911272507998729L;
 
-    @Inject
-    GastoDAO gastoDAO;
 
-    @Inject
-    ProjetoDAO projetoDAO;
+    GastoDAO gastoDAO = new GastoDAO();
 
-    @Inject
-    FabricaConexao fabrica;
+    ProjetoDAO projetoDAO = new ProjetoDAO();
+
+    FabricaConexao fabrica = new FabricaConexao();
 
     public void create(Local local) throws SQLException, ClassNotFoundException {
     

@@ -9,11 +9,14 @@ import java.io.Serializable;
 import java.util.List;
 
 
+
 /**
  *
  * @author Emm
  */
 public class Projeto implements Serializable {
+
+    private static final long serialVersionUID = -7691438838266599757L;
     
     private int id_projeto;
     

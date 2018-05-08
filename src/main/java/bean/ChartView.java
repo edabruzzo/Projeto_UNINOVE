@@ -4,14 +4,13 @@ package bean;
 
  
 import DAO.GastoDAO;
-import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import modelo.Gasto;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
@@ -19,7 +18,7 @@ import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.DateAxis;
 import org.primefaces.model.chart.LineChartSeries;
  
-@Named
+@ManagedBean
 @SessionScoped
 public class ChartView implements Serializable {
 
@@ -39,10 +38,6 @@ public class ChartView implements Serializable {
         this.mostraGrafico = mostraGrafico;
     }
   
-    @PostConstruct
-    public void init() throws ClassNotFoundException, SQLException {
-        createAnimatedModels();
-    }
  
     public LineChartModel getAnimatedModel1() {
        // animatedModel1 = (LineChartModel) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("model");

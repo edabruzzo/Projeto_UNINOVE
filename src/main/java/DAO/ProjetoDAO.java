@@ -24,11 +24,10 @@ public class ProjetoDAO implements Serializable {
 
     private static final long serialVersionUID = -6130058936322421816L;
 
-    @Inject
-    LocalDAO localDAO;
+    LocalDAO localDAO = new LocalDAO();
     
-    @Inject
-    FabricaConexao fabrica;
+   FabricaConexao fabrica = new FabricaConexao();
+
     
     
     

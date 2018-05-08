@@ -1,9 +1,10 @@
 package bean;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
+import javax.faces.bean.ApplicationScoped;
+import javax.faces.bean.ManagedBean;
 
-@Named
+
+@ManagedBean
 @ApplicationScoped
 public class TemaBean {
 	

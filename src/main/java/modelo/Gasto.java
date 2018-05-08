@@ -13,6 +13,8 @@ import java.util.Date;
  * @author Emm
  */
 public class Gasto implements Serializable{
+
+    private static final long serialVersionUID = 7966896285521206692L;
     
         private int id_gasto;
         

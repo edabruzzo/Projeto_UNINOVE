@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
  * @author Emm
  */
 public class Papel implements Serializable {
+
+    private static final long serialVersionUID = 1646458488277900394L;
     
     private int idPapel;
 

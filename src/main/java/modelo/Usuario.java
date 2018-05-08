@@ -8,17 +8,16 @@ package modelo;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
 
 /**
  *
  * @author Emm
  */
-@Entity
-@Table (name = "tb_usuario")
+
 public class Usuario implements Serializable{
+
+    private static final long serialVersionUID = 5788345956870889976L;
     
    
     private int idUsuario;

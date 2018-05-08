@@ -25,9 +25,8 @@ public class FabricaConexao implements Serializable{
     private static final long serialVersionUID = -6170720701523334179L;
 
     private String URL;
-    
-    @Inject
-    private ContextoJSF contextoJSF;
+   
+    private ContextoJSF contextoJSF = new ContextoJSF();
 
     public void criaInfraestrutura() throws SQLException, ClassNotFoundException {
 
