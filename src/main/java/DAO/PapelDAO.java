@@ -9,18 +9,9 @@ import Util.FabricaConexao;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import modelo.Usuario;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import modelo.Local;
 import modelo.Papel;
 
 /**
