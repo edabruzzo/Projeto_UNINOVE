@@ -10,12 +10,11 @@ package bean;
 import DAO.UsuarioDAO;
 import Util.ContextoJSF;
 import Util.CriptografiaSenha;
+import Util.FabricaConexao;
 import java.io.IOException;
 import java.sql.SQLException;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.servlet.Filter;
   import javax.servlet.FilterChain;
@@ -42,10 +41,20 @@ private static final long serialVersionUID = 1L;
 
 private  boolean permiteAcesso = false;
 
-  private static Usuario usuario = new Usuario();
+private boolean mostrarBotaoCriarInfra = false;
+
+
+ private static Usuario usuario = new Usuario();
   
 @Inject  
 ContextoJSF contextoJSF;
+
+@Inject
+UsuarioDAO usuarioDAO;
+
+@Inject
+FabricaConexao fabricaConexao;
+
 
     public boolean isPermiteAcesso() {
         return permiteAcesso;
@@ -63,6 +72,14 @@ ContextoJSF contextoJSF;
         this.usuario = usuario;
     }
     
+    
+    
+    public void criarInfraestrutura() throws ClassNotFoundException, SQLException{
+        
+        this.fabricaConexao.criaBaseDados();
+        this.fabricaConexao.criaInfraestrutura();
+        
+    }
     
     
     
@@ -295,8 +312,20 @@ ContextoJSF contextoJSF;
                      // TODO Auto-generated method stub
    
            }
-           
-           
+
+    public boolean isMostrarBotaoCriarInfra() throws ClassNotFoundException, SQLException {
+        
+        
+        Usuario usuario = usuarioDAO.findByLogin("SUPERADMIN");
+        
+        if(usuario == null){
+            
+            mostrarBotaoCriarInfra = true;
+        }
+        return mostrarBotaoCriarInfra;
+    }
+    
+       
           
    
   }
