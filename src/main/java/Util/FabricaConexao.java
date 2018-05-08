@@ -103,7 +103,7 @@ public class FabricaConexao {
         listaSQLs.addBatch(sql24);
 
         String sql25 = "INSERT INTO tb_usuario (email, LOGIN, NOME, PASSWORD, PAPEL_IDPAPEL) "
-                + "VALUES ('xxx@gmail.com', 'SUPERADMIN', 'ZÉ', '' , 1)\n";
+                + "VALUES ('xxx@gmail.com', 'SUPERADMIN', 'ZÉ', '' , 1)";
         listaSQLs.addBatch(sql25);
 
         String sql26 = "INSERT INTO tb_papel_tb_usuario (usuario_IDUSUARIO, Papel_IDPAPEL) VALUES (1, 1)";
@@ -112,9 +112,11 @@ public class FabricaConexao {
         try {
 
             int[] i = listaSQLs.executeBatch();
+            conn.commit();
 
         } catch (SQLException ex) {
             Logger.getLogger(FabricaConexao.class.getName()).log(Level.SEVERE, null, ex);
+            conn.rollback();
 
         } finally {
 
@@ -139,10 +141,11 @@ public class FabricaConexao {
         try {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
             stmt = conn.createStatement();
+            conn.setAutoCommit(false);
             stmt.execute("CREATE DATABASE IF NOT EXISTS controleFinanceiroUNINOVE");
-
+            conn.commit();
         } catch (SQLException ex) {
-
+            conn.rollback();
             Logger.getLogger(FabricaConexao.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
 
@@ -244,14 +247,17 @@ public class FabricaConexao {
 
         Connection conn = criaConexao();
         Statement stmt = conn.createStatement();
+        conn.setAutoCommit(false);
 
         try {
             System.out.println("Executando a seguinte query .....");
             System.out.println(sql);
             stmt.executeUpdate(sql);
+            conn.commit();
             System.out.println("Executada com sucesso!");
         } catch (SQLException ex) {
             Logger.getLogger(FabricaConexao.class.getName()).log(Level.SEVERE, null, ex);
+            conn.rollback();
         } finally {
 
             stmt.close();

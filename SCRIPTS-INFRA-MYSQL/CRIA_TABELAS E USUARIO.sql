@@ -22,3 +22,5 @@ ALTER TABLE tb_usuario_tb_gasto ADD CONSTRAINT FK_tb_usuario_tb_gasto_gastos_ID_
 INSERT INTO tb_papel (ATIVO, DESCPAPEL, PRIVADMIN, PRIV_SUPERADMIN) VALUES (true, 'SUPER ADMINISTRAADOR', true, true);
 INSERT INTO tb_papel (ATIVO, DESCPAPEL, PRIVADMIN, PRIV_SUPERADMIN) VALUES (true, 'ADMINISTRADOR', true, false);
 INSERT INTO tb_papel (ATIVO, DESCPAPEL, PRIVADMIN, PRIV_SUPERADMIN) VALUES (true, 'USUÁRIO', false, false);
+INSERT INTO tb_usuario (EMAIL, LOGIN, NOME, PASSWORD, PAPEL_IDPAPEL) VALUES ('xxx@gmail.com', 'SUPERADMIN', 'Administrador', '' , 1);
+INSERT INTO tb_papel_tb_usuario (usuario_IDUSUARIO, Papel_IDPAPEL) VALUES (1, 1);

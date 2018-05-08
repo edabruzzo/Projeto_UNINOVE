@@ -5,26 +5,18 @@
  */
 package DAO;
 
-import DAO.exceptions.NonexistentEntityException;
 import Util.FabricaConexao;
-import bean.GastoBean;
 import java.io.Serializable;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import modelo.Gasto;
-import modelo.Usuario;
 import modelo.Local;
+import modelo.Usuario;
 
 /**
  *
@@ -32,170 +24,134 @@ import modelo.Local;
  */
 public class GastoDAO implements Serializable {
 
-    @Inject    
+    @Inject
     FabricaConexao fabrica;
     
-    
-    
+    @Inject
+    UsuarioDAO usuarioDAO;
+
     public boolean criarGasto(Gasto gasto) throws ClassNotFoundException, SQLException {
-        
-        
-            String sql1 = "INSERT INTO tb_gasto (DATAGASTO, "
-                    + "MODALIDADEPAGAMENTO, TIPOGASTO, VALORGASTO, "
-                    + "USUARIO_IDUSUARIO, LOCAL_ID_LOCAL) "
-                    + "VALUES ('"+gasto.getDataGasto()
-                    + "', '"+gasto.getModalidadePagamento()
-                    + "', "+gasto.getTipoGasto()
-                    + "', "+gasto.getValorGasto()
-                    + " , "+gasto.getUsuario().getIdUsuario()
-                    + " , "+gasto.getLocal().getId_local();
-        
-        
+
+        String sql1 = "INSERT INTO tb_gasto (DATAGASTO, "
+                + "MODALIDADEPAGAMENTO, TIPOGASTO, VALORGASTO, "
+                + "USUARIO_IDUSUARIO, LOCAL_ID_LOCAL) "
+                + "VALUES ('" + gasto.getDataGasto()
+                + "', '" + gasto.getModalidadePagamento()
+                + "', " + gasto.getTipoGasto()
+                + "', " + gasto.getValorGasto()
+                + " , " + gasto.getUsuario().getIdUsuario()
+                + " , " + gasto.getLocal().getId_local();
+
         try {
             fabrica.executaQuerieUpdate(sql1);
         } catch (SQLException ex) {
             Logger.getLogger(GastoDAO.class.getName()).log(Level.SEVERE, null, ex);
-            
+
             return false;
         }
 
-            String sql2 = "INSERT INTO tb_usuario_tb_gasto (Usuario_IDUSUARIO, gastos_ID_GASTO) "
-                    + "VALUES ("+gasto.getUsuario().getIdUsuario()
-                    + " , (SELECT last_insert_id() FROM tb_gasto));";
+        String sql2 = "INSERT INTO tb_usuario_tb_gasto (Usuario_IDUSUARIO, gastos_ID_GASTO) "
+                + "VALUES (" + gasto.getUsuario().getIdUsuario()
+                + " , (SELECT last_insert_id() FROM tb_gasto));";
+
+        fabrica.executaQuerieUpdate(sql2);
+
+        String sql3 = "INSERT INTO tb_usuario_tb_gasto (Usuario_IDUSUARIO, gastos_ID_GASTO) "
+                + "VALUES (" + gasto.getUsuario().getIdUsuario()
+                + " , (SELECT last_insert_id() FROM tb_gasto));";
+
+        fabrica.executaQuerieUpdate(sql3);
+
+        String sql4 = "INSERT INTO tb_local_tb_gasto (Local_ID_LOCAL, gastos_ID_GASTO) "
+                + "VALUES ((SELECT last_insert_id() FROM tb_gasto), " + gasto.getLocal().getId_local()
+                + " );";
+
+        fabrica.executaQuerieUpdate(sql4);
+
+        return true;
+
+    }
+
+
+
+    public void edit(Gasto gasto) throws  SQLException, ClassNotFoundException {
+
+        String sql1 = "UPDATE tb_gasto "
+                    + " SET DATAGASTO = '"+gasto.getDataGasto()
+                + "', MODALIDADEPAGAMENTO = '"+gasto.getModalidadePagamento()
+                + "', TIPOGASTO = '"+gasto.getTipoGasto()
+                + "', VALORGASTO = "+gasto.getValorGasto()
+                + ", USUARIO_IDUSUARIO = "+gasto.getUsuario().getIdUsuario()
+                + ", LOCAL_ID_LOCAL = "+gasto.getLocal().getId_local()
+                + "WHERE ID_GASTO = "+gasto.getId_gasto()+";";
+        
+            fabrica.executaQuerieUpdate(sql1);
+            
+            String sql2 = "UPDATE tb_usuario_tb_gasto "
+                    + " SET USUARIO_IDUSUARIO = "+gasto.getUsuario().getIdUsuario()
+                    + " WHERE GASTOS_ID_GASTO = "+gasto.getId_gasto()+" ;";
             
             fabrica.executaQuerieUpdate(sql2);
-
-            String sql3 =  "INSERT INTO tb_usuario_tb_gasto (Usuario_IDUSUARIO, gastos_ID_GASTO) "
-                    + "VALUES ("+gasto.getUsuario().getIdUsuario()
-                    + " , (SELECT last_insert_id() FROM tb_gasto));";
-           
+        
+            String sql3 = "UPDATE tb_local_tb_gasto "
+                    + " SET Local_ID_LOCAL = "+gasto.getLocal().getId_local()
+                    + " WHERE gastos_ID_GASTO = "+gasto.getId_gasto()+";";
+            
             fabrica.executaQuerieUpdate(sql3);
-            
-            
-            String sql4 = "INSERT INTO tb_local_tb_gasto (Local_ID_LOCAL, gastos_ID_GASTO) "
-                    + "VALUES ((SELECT last_insert_id() FROM tb_gasto), "+gasto.getLocal().getId_local()
-                    + " );";
-            
-            fabrica.executaQuerieUpdate(sql4);
         
-            
-            return true;
-            
-        }
+
+            }
     
+    
+
+    public void destroy(int id) throws ClassNotFoundException, SQLException {
         
-    }
+        String sql = "DELETE FROM tb_gasto WHERE id_gasto = "+id+";";
+        
+        fabrica.executaQuerieSemResultado(sql);
+        
+        String sql2 = "DELETE FROM tb_usuario_tb_gasto WHERE gastos_ID_GASTO = "
+                + id + ";";
+        
+        fabrica.executaQuerieUpdate(sql2);
+        
+        String sql3 = "DELETE FROM tb_local_tb_gasto WHERE gastos_ID_GASTO = "
+                + id + ";";
+        
+        fabrica.executaQuerieUpdate(sql3);
 
-    public void edit(Gasto gasto) throws NonexistentEntityException, Exception {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Gasto persistentGasto = em.find(Gasto.class, gasto.getId_gasto());
-            Usuario usuarioOld = persistentGasto.getUsuario();
-            Usuario usuarioNew = gasto.getUsuario();
-            Local localOld = persistentGasto.getLocal();
-            Local localNew = gasto.getLocal();
-            if (usuarioNew != null) {
-                usuarioNew = em.getReference(usuarioNew.getClass(), usuarioNew.getIdUsuario());
-                gasto.setUsuario(usuarioNew);
-            }
-            if (localNew != null) {
-                localNew = em.getReference(localNew.getClass(), localNew.getId_local());
-                gasto.setLocal(localNew);
-            }
-            gasto = em.merge(gasto);
-            if (usuarioOld != null && !usuarioOld.equals(usuarioNew)) {
-                usuarioOld.getGastos().remove(gasto);
-                usuarioOld = em.merge(usuarioOld);
-            }
-            if (usuarioNew != null && !usuarioNew.equals(usuarioOld)) {
-                usuarioNew.getGastos().add(gasto);
-                usuarioNew = em.merge(usuarioNew);
-            }
-            if (localOld != null && !localOld.equals(localNew)) {
-                localOld.getGastos().remove(gasto);
-                localOld = em.merge(localOld);
-            }
-            if (localNew != null && !localNew.equals(localOld)) {
-                localNew.getGastos().add(gasto);
-                localNew = em.merge(localNew);
-            }
-            em.getTransaction().commit();
-        } catch (Exception ex) {
-            String msg = ex.getLocalizedMessage();
-            if (msg == null || msg.length() == 0) {
-                int id = gasto.getId_gasto();
-                if (findGasto(id) == null) {
-                    throw new NonexistentEntityException("The gasto with id " + id + " no longer exists.");
-                }
-            }
-            throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-         
-            }
-        }
-    }
-
-    public void destroy(int id) throws NonexistentEntityException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Gasto gasto;
-            try {
-                gasto = em.getReference(Gasto.class, id);
-                gasto.getId_gasto();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The gasto with id " + id + " no longer exists.", enfe);
-            }
-            Usuario usuario = gasto.getUsuario();
-            if (usuario != null) {
-                usuario.getGastos().remove(gasto);
-                usuario = em.merge(usuario);
-            }
-            Local local = gasto.getLocal();
-            if (local != null) {
-                local.getGastos().remove(gasto);
-                local = em.merge(local);
-            }
-            em.remove(gasto);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-               em.close();
+                
       
-            }
-        }
-    }
+       }
+        
 
-    public List<Gasto> findGastoEntities() {
-        return findGastoEntities(true, -1, -1);
-    }
-
-    public List<Gasto> findGastoEntities(int maxResults, int firstResult) {
-        return findGastoEntities(false, maxResults, firstResult);
-    }
-
-    private List<Gasto> findGastoEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
-        try {
-            CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-            CriteriaQuery<Object> criteriaQuery = criteriaBuilder.createQuery();
-            Root<Gasto> from = criteriaQuery.from(Gasto.class);
-            CriteriaQuery<Object> select1 = criteriaQuery.select(from);
-            select1.orderBy(criteriaBuilder.desc(from.get("dataGasto")));
-            Query q = em.createQuery(select1);
-            
-            if (!all) {
-                q.setMaxResults(maxResults);
-                q.setFirstResult(firstResult);
-            }
-            return q.getResultList();
-        } finally {
-            em.close();
+    public List<Gasto> findGastoEntities() throws ClassNotFoundException, SQLException {
+      
+      String sql = "SELECT * FROM tb_gasto;";
+      
+      ResultSet rs = fabrica.executaQuerieResultSet(sql);
+      List<Gasto> listaGastos = new ArrayList();
+      Gasto gasto = new Gasto();
+      Usuario usuario = new Usuario();
+      Local  local = new Local();
+      while(rs.next()){
+          
+          gasto.setId_gasto(rs.getInt("id_gasto"));
+          gasto.setDataGasto(rs.getDate("DATAGASTO"));
+          gasto.setModalidadePagamento(rs.getString("MODALIDADEPAGAMENTO"));
+          gasto.setTipoGasto(rs.getString("TIPOGASTO"));
+          gasto.setValorGasto(rs.getDouble("VALORGASTO"));
+          
+          Usuario usuario = rs.getInt("USUARIO_IDUSUARIO");
+          ResultSet rs2 = fabrica.executaQuerieResultSet(sql2);
+          
+          
+              
+          }
+          
+          
+          
+          
          
         }
     }
@@ -203,8 +159,14 @@ public class GastoDAO implements Serializable {
     
     public Gasto findGasto(int id) {
         EntityManager em = getEntityManager();
-        try{
-            return em.find(Gasto.class, id);
+        
+
+
+
+try{
+            return em.find(Gasto.class
+
+, id);
         }finally {
            em.close();
         
@@ -215,7 +177,13 @@ public class GastoDAO implements Serializable {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<Gasto> rt = cq.from(Gasto.class);
+            Root
+
+
+
+<Gasto> rt = cq.from(Gasto.class
+
+);
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();
@@ -296,7 +264,13 @@ public class GastoDAO implements Serializable {
        public List<Gasto> listaGastosByConsultaSQL(){
         EntityManager em = getEntityManager();
            String sqlString = "SELECT * FROM tb_gasto ORDER BY ID_GASTO DESC;";
-          Query q = em.createNativeQuery(sqlString, Gasto.class);
+          Query 
+
+
+
+q = em.createNativeQuery(sqlString, Gasto.class
+
+);
            List<Gasto> listaGasto = new ArrayList();
           try{
          
@@ -322,7 +296,13 @@ public class GastoDAO implements Serializable {
         EntityManager em = getEntityManager();
            String sqlString = "SELECT g.* FROM tb_gasto g "
               + " WHERE g.LOCAL_ID_LOCAL = "+localID+" ORDER BY DATAGASTO DESC;";
-          Query q = em.createNativeQuery(sqlString, Gasto.class);
+          Query 
+
+
+
+q = em.createNativeQuery(sqlString, Gasto.class
+
+);
           try{
            return (List<Gasto>) q.getResultList();
          // }catch(NullPointerException npex){
@@ -342,7 +322,13 @@ public class GastoDAO implements Serializable {
         EntityManager em = getEntityManager();
            String sqlString = "SELECT g.* FROM tb_gasto g "
               + " WHERE g.USUARIO_IDUSUARIO = "+idUsuario+" ORDER BY DATAGASTO DESC;";
-          Query q = em.createNativeQuery(sqlString, Gasto.class);
+          Query 
+
+
+
+q = em.createNativeQuery(sqlString, Gasto.class
+
+);
           List<Gasto> listaGastos = new ArrayList();
           try{
           listaGastos = (List<Gasto>) q.getResultList();
@@ -362,7 +348,13 @@ public class GastoDAO implements Serializable {
         EntityManager em = getEntityManager();
            String sqlString = "SELECT g.* FROM tb_gasto g "
               + " WHERE g.USUARIO_IDUSUARIO = "+idUsuario+" ORDER BY DATAGASTO DESC;";
-          Query q = em.createNativeQuery(sqlString, Gasto.class);
+          Query 
+
+
+
+q = em.createNativeQuery(sqlString, Gasto.class
+
+);
           try{
            return (List<Gasto>) q.getResultList();
          // }catch(NullPointerException npex){
@@ -423,7 +415,13 @@ public class GastoDAO implements Serializable {
            + "INNER JOIN tb_projeto_tb_local pl ON g.LOCAL_ID_LOCAL = pl.locais_ID_LOCAL "
            + "INNER JOIN tb_projeto p ON pl.Projeto_ID_PROJETO = p.ID_PROJETO "        
               + " WHERE p.ID_PROJETO = "+projetoID+";";                   
-          Query q = em.createNativeQuery(sqlString, Gasto.class);
+          Query 
+
+
+
+q = em.createNativeQuery(sqlString, Gasto.class
+
+);
           try{
            return (List<Gasto>) q.getResultList();
             }finally{
@@ -493,7 +491,13 @@ public class GastoDAO implements Serializable {
                 + "WHERE USUARIO_IDUSUARIO = "+idUsuario
               + " AND g.DATAGASTO BETWEEN '"+year+"-"+month+"-01' AND '"+year+"-"+month+"-31' "
                 + "ORDER BY g.DATAGASTO DESC;";
-          Query q = em.createNativeQuery(sqlString, Gasto.class);
+          Query 
+
+
+
+q = em.createNativeQuery(sqlString, Gasto.class
+
+);
           try{
                      listaGastos = (List<Gasto>) q.getResultList();
           }catch (NullPointerException npex) {
@@ -518,7 +522,13 @@ public class GastoDAO implements Serializable {
         String sqlString = "SELECT g.* FROM tb_gasto g "
               + " WHERE g.DATAGASTO BETWEEN '"+year+"-"+month+"-01' AND '"+year+"-"+month+"-31' "
                 + " ORDER BY DATAGASTO DESC;";
-          Query q = em.createNativeQuery(sqlString, Gasto.class);
+          Query 
+
+
+
+q = em.createNativeQuery(sqlString, Gasto.class
+
+);
          
           try{
               q.getResultList();

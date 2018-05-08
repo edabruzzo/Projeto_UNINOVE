@@ -79,8 +79,8 @@ public class GastoBean {
 
 
     public List<Gasto> getListaGastosTotais() {
-         GastoDAO gastoDAO = new GastoDAO();
-        this.listaGastosTotais = gastoDAO.listaGastosByConsultaSQL();
+        GastoDAO gastoDAO = new GastoDAO();
+        this.listaGastosTotais = gastoDAO.findGastoEntities();
         return listaGastosTotais;
         
     }
