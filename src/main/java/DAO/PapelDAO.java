@@ -5,8 +5,9 @@
  */
 package DAO;
 
-import DAO.exceptions.NonexistentEntityException;
 import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
@@ -17,6 +18,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import modelo.Local;
 import modelo.Papel;
 
 /**
@@ -207,5 +209,20 @@ public class PapelDAO implements Serializable {
       
         }
     }
+
+
+     public Papel extraiPapelResultSet(ResultSet rs) throws SQLException{
+
+         Papel papel = new Papel();
+         
+         papel.setIdPapel(rs.getInt("IDPAPEL"));
+         papel.setAtivo(rs.getBoolean("ATIVO"));
+         papel.setDescPapel(rs.getString("DESCPAPEL"));
+         papel.setPrivAdmin(rs.getBoolean("PRIVADMIN"));
+         papel.setPrivSuperAdmin(rs.getBoolean("PRIV_SUPERADMIN"));
+         
+         return papel;
+
+     }
     
 }
