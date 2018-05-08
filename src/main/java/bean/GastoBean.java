@@ -10,20 +10,18 @@ import DAO.LocalDAO;
 import DAO.ProjetoDAO;
 import DAO.UsuarioDAO;
 import Util.ContextoJSF;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
-import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import modelo.Gasto;
 import modelo.Local;
 import modelo.Projeto;
 import modelo.Usuario;
-import org.primefaces.event.data.FilterEvent;
 
 
 
@@ -35,9 +33,12 @@ import org.primefaces.event.data.FilterEvent;
 @SessionScoped
 public class GastoBean {
     
-    private Gasto gasto = new Gasto();
-    private Local local = new Local();
-    private Usuario usuario = new Usuario();
+    @Inject
+    private Gasto gasto;
+    @Inject 
+    private Local local;
+    @Inject
+    private Usuario usuario;
     private int projetoID;
     private int localID;
     //este é o usuário logado
@@ -83,7 +84,7 @@ public class GastoBean {
     }
 
 
-    public List<Gasto> getListaGastosTotais() {
+    public List<Gasto> getListaGastosTotais() throws ClassNotFoundException, SQLException {
         GastoDAO gastoDAO = new GastoDAO();
         this.listaGastosTotais = gastoDAO.findGastoEntities();
         return listaGastosTotais;
@@ -108,17 +109,6 @@ public class GastoBean {
         return permiteConsultaSQL;
     }
 
-    public void setPermiteConsultaSQL(boolean permiteConsultaSQL) {
-        this.permiteConsultaSQL = permiteConsultaSQL;
-    }
-
-    public String getConsultaSQL() {
-        return consultaSQL;
-    }
-
-    public void setConsultaSQL(String consultaSQL) {
-        this.consultaSQL = consultaSQL;
-    }
 
     public Integer getIDUsuarioPesquisado() {
         return IDUsuarioPesquisado;
@@ -280,33 +270,8 @@ public class GastoBean {
     }
     
 
-
-       public void verificaPermissaoPesquissaGastosSQL(){
-           LoginFilter lf = new LoginFilter();
-
-          if(lf.verificaPrivilegio()){
-
-              this.permiteConsultaSQL = true;
-
-          }
-       }
-       
-       
-       public void verificaGastosSQL(){
-           
-           GastoDAO gastoDAO = new GastoDAO();
-           LoginFilter lf = new LoginFilter();
-           if(lf.verificaPrivilegioSuperAdmin()){
-           this.listaGastosPesquisa = gastoDAO.listaGastosByConsultaSQL();
-           this.gastosTotais = gastoDAO.calculaGastosBySQL(this.consultaSQL);
-           this.mostrarTabelaPesquisas = true;
-           this.permiteConsultaSQL = false;
-           }
-           
-       }
-
     
-    public void verificaGastosMes() {
+    public void verificaGastosMes() throws ClassNotFoundException, SQLException {
         
        LoginFilter lf = new LoginFilter();
        Usuario usuarioLogado = new Usuario();
@@ -334,7 +299,7 @@ public class GastoBean {
     }
     
     
-      public void verificaGastosLocal(){
+      public void verificaGastosLocal() throws ClassNotFoundException, SQLException{
         
        LoginFilter lf = new LoginFilter();
        Usuario usuarioLogado = new Usuario();
@@ -359,7 +324,7 @@ public class GastoBean {
     }
       
       
-       public void verificaGastosUsuario(){
+       public void verificaGastosUsuario() throws ClassNotFoundException, SQLException{
            
        LoginFilter lf = new LoginFilter();
        Usuario usuarioLogado = new Usuario();
@@ -382,7 +347,7 @@ public class GastoBean {
        }
       
       
-        public void verificaGastosProjeto(){
+        public void verificaGastosProjeto() throws ClassNotFoundException, SQLException{
         
         LoginFilter lf = new LoginFilter();
         Usuario usuarioLogado = new Usuario();
@@ -407,7 +372,7 @@ public class GastoBean {
     
     
     
-    public void adicionarGasto(){
+    public void adicionarGasto() throws ClassNotFoundException, SQLException{
     
         GastoDAO gastoDAO = new GastoDAO();
         boolean gravado = false;
@@ -420,11 +385,12 @@ public class GastoBean {
             String mensagem1 = null;
              mensagem1 = "HOUVE UM PROBLEMA E O GASTO NÃO FOI GRAVADO POIS "
                      + "O LOCAL E/OU USUÁRIO ESTÃO NULOS";
-            FacesMessage fm = new FacesMessage(mensagem1);
-             FacesContext.getCurrentInstance().addMessage("gravaGasto", fm);
+
+             contextoJSF.adicionaMensagem("erro", mensagem1);
+
+
         }else{
          gravado =  gastoDAO.criarGasto(gasto);
-         this.listaGastosTotais = gastoDAO.listaGastosByConsultaSQL();
         }
          String mensagem = null;
            
@@ -443,7 +409,7 @@ public class GastoBean {
        //this.gasto = new Gasto();
         }
     
-        public void gravaLocal(){
+        public void gravaLocal() throws SQLException, ClassNotFoundException{
             
              LocalDAO localDAO = new LocalDAO();
             
@@ -453,7 +419,7 @@ public class GastoBean {
                     
         }
     
-        public List<Local> selecionaLocais(){
+        public List<Local> selecionaLocais() throws SQLException, ClassNotFoundException{
             
             LocalDAO locaisDAO = new LocalDAO();
            
@@ -463,7 +429,7 @@ public class GastoBean {
         }
         
         
-        public List<Projeto> selecionaProjetos(){
+        public List<Projeto> selecionaProjetos() throws ClassNotFoundException, SQLException{
             
             ProjetoDAO projetoDAO = new ProjetoDAO();
             List<Projeto> listaProjetos = projetoDAO.findProjetoEntities();
@@ -471,7 +437,7 @@ public class GastoBean {
         }
         
         
-           public List<Usuario> selecionaUsuarios(){
+           public List<Usuario> selecionaUsuarios() throws ClassNotFoundException, SQLException{
             
             UsuarioDAO usuarioDAO = new UsuarioDAO();
            
@@ -480,7 +446,7 @@ public class GastoBean {
             return listaUsuarios;
         }
            
-             public void gravaUsuario(){
+             public void gravaUsuario() throws ClassNotFoundException, SQLException{
             
             UsuarioDAO usuarioDAO = new UsuarioDAO();
             
@@ -496,9 +462,8 @@ public class GastoBean {
                  this.canEdit = true;
                  }else {
             
-            
-            FacesMessage fm = new FacesMessage("DESCULPE, MAS VOCÊ NÃO TEM PRIVILÉGIO DE ADMINISTRADOR PARA EXECUTAR ESTA AÇÃO!");
-            FacesContext.getCurrentInstance().addMessage("editaGasto", fm);
+            String mensagem = "DESCULPE, MAS VOCÊ NÃO TEM PRIVILÉGIO DE ADMINISTRADOR PARA EXECUTAR ESTA AÇÃO!";
+            contextoJSF.adicionaMensagem("alerta", mensagem);
                }
                  
              }
@@ -535,16 +500,14 @@ public class GastoBean {
                 this.gastoEditado = gasto; 
                  */
                 
-                
-                
-                LoginFilter lf = new LoginFilter();
+                 LoginFilter lf = new LoginFilter();
                  boolean possuiPrivilegio = lf.verificaPrivilegio();
                  
                  if(possuiPrivilegio & this.gastoEditado != null){
                  GastoDAO gastoDAO = new GastoDAO();
                  gastoDAO.edit(this.gastoEditado);
                  this.canEdit = false;
-                 this.listaGastosTotais = gastoDAO.listaGastosByConsultaSQL();
+                 this.listaGastosTotais = gastoDAO.findGastoEntities();
             
                }
                 
@@ -552,7 +515,7 @@ public class GastoBean {
             }
         
         
-             public void deletaGasto() throws NonexistentEntityException{
+             public void deletaGasto() throws ClassNotFoundException, SQLException {
                  
                  LoginFilter lf = new LoginFilter();
                  boolean possuiPrivilegio = lf.verificaPrivilegio();
@@ -569,7 +532,7 @@ public class GastoBean {
                  
              }
         
-        public String verificaGastosTotais(){
+        public String verificaGastosTotais() throws ClassNotFoundException, ClassNotFoundException, SQLException{
             
             GastoDAO gastoDAO = new GastoDAO();
             LoginFilter lf = new LoginFilter();

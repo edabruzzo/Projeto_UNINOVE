@@ -7,6 +7,7 @@ package bean;
 
 import DAO.LocalDAO;
 import DAO.ProjetoDAO;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -58,7 +59,7 @@ public class LocalBean {
     }
     
     
-    public List<Projeto> listaProjetos(){
+    public List<Projeto> listaProjetos() throws ClassNotFoundException, SQLException{
         
         ProjetoDAO projetoDAO = new ProjetoDAO();
          List<Projeto> listaProjetos = new ArrayList();
@@ -67,14 +68,14 @@ public class LocalBean {
         
     }
     
-    public void gravaProjetoNoLocal(){
+    public void gravaProjetoNoLocal() throws ClassNotFoundException, SQLException{
          ProjetoDAO projetoDAO = new ProjetoDAO();
          this.projeto = projetoDAO.findProjeto(projetoID);
          this.local.setProjeto(this.projeto);
     }
     
     
-    public void criaNovoLocal(){
+    public void criaNovoLocal() throws SQLException, ClassNotFoundException{
         
         LocalDAO localDAO = new LocalDAO();
         localDAO.create(this.local);
@@ -82,7 +83,7 @@ public class LocalBean {
     }
     
     
-    public List<Local> listaLocais(){
+    public List<Local> listaLocais() throws SQLException, ClassNotFoundException{
           LocalDAO localDAO = new LocalDAO();
         List<Local> listaLocais = new ArrayList();  
         listaLocais = localDAO.findLocalEntities();

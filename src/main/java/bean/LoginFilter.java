@@ -8,12 +8,15 @@ package bean;
 
 
 import DAO.UsuarioDAO;
+import Util.ContextoJSF;
 import Util.CriptografiaSenha;
 import java.io.IOException;
+import java.sql.SQLException;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.servlet.Filter;
   import javax.servlet.FilterChain;
   import javax.servlet.FilterConfig;
@@ -41,7 +44,8 @@ private  boolean permiteAcesso = false;
 
   private static Usuario usuario = new Usuario();
   
-
+@Inject  
+ContextoJSF contextoJSF;
 
     public boolean isPermiteAcesso() {
         return permiteAcesso;
@@ -62,7 +66,7 @@ private  boolean permiteAcesso = false;
     
     
     
-        public String validaAcesso(){
+        public String validaAcesso() throws ClassNotFoundException, SQLException{
             
            String redireciona = "login?faces-redirect=true";
            
@@ -78,12 +82,13 @@ private  boolean permiteAcesso = false;
             novoUsuario = usuarioDAO.findByLoginSenha(this.usuario.getLogin(), this.usuario.getPassword());
  
             if(novoUsuario == null){
-                    apresentaMensagemErro("validaAcesso", "O PROCESSO DE LOGIN FALHOU ! USUÁRIO INEXISTENTE OU SENHA INCORRETA !");
+                    
+                String mensagem = "O PROCESSO DE LOGIN FALHOU ! USUÁRIO INEXISTENTE OU SENHA INCORRETA !";
+                contextoJSF.adicionaMensagem("fatal", mensagem);
+                
             }else{
            
-              //LANÇA UMA EXCEÇÃO java.lang.UnsupportedOperationException
-               //params.put("usuarioLogado", novoUsuario.getNome());
-               // params.putIfAbsent("usuarioLogado", novoUsuario.getNome()); 
+              contextoJSF.guardarUsuarioMapaSessao(this.usuario);
               this.usuario = novoUsuario;
               this.permiteAcesso = true;
                 redireciona = "/restricted/gastos?faces-redirect=true";
@@ -94,47 +99,39 @@ private  boolean permiteAcesso = false;
         }
         
         
-        public void apresentaMensagemErro(String idElemento, String mensagemErro){
-            
-            FacesMessage mensagem = new FacesMessage(mensagemErro);    
-            FacesContext.getCurrentInstance().addMessage(idElemento, mensagem); 
-            
-            
-        }
-                
-              public void apresentaMensagemErro(String mensagemErro){
-            
-            FacesMessage mensagem = new FacesMessage(mensagemErro);    
-            FacesContext.getCurrentInstance().addMessage(null, mensagem); 
-            
-            
-        } 
-        
-        
-         public boolean verificaPapel(){
+         public boolean verificaPapel() throws ClassNotFoundException, SQLException{
             
              boolean permitido = false;
-             if (this.usuario != null & this.usuario.getPapel().isPrivAdmin()){
+             Usuario usuarioLogado = contextoJSF.verificarUsuarioLogado();
+             
+             if (usuarioLogado != null & usuarioLogado.getPapel().isPrivAdmin()){
              permitido = true;
+             }else{
+                 
+                 contextoJSF.adicionaMensagem("erro", "Você não possui privilégio");  
              }
-            
              return permitido;
          }
          
          
-         public boolean verificaPrivilegioSuperAdmin(){
+         public boolean verificaPrivilegioSuperAdmin() throws ClassNotFoundException, SQLException{
              
              boolean possuiPrivilegioSuperAdmin = false;
-             if (this.usuario != null & this.usuario.getPapel().isPrivSuperAdmin()){
+
+            Usuario usuarioLogado = contextoJSF.verificarUsuarioLogado();
+
+             if (usuarioLogado != null & usuarioLogado.getPapel().isPrivSuperAdmin()){
              possuiPrivilegioSuperAdmin = true;
+             }else{
+                 
+                 contextoJSF.adicionaMensagem("erro", "Você não possui privilégio");  
              }
-            
              return possuiPrivilegioSuperAdmin;
          }
       
          
          
-         public String redirecionaUsuários(){
+         public String redirecionaUsuários() throws ClassNotFoundException, SQLException{
              String redireciona = null;
              boolean permitidoRedirecionamento = verificaPapel();
              if(permitidoRedirecionamento){
@@ -145,7 +142,7 @@ private  boolean permiteAcesso = false;
          
          
          
-             public String redirecionaGráficos(){
+             public String redirecionaGráficos() throws ClassNotFoundException, SQLException{
              String redireciona = null;
              boolean permitidoRedirecionamento = verificaPapel();
              if(permitidoRedirecionamento){
@@ -157,7 +154,7 @@ private  boolean permiteAcesso = false;
          
          
                   
-         public String redirecionaPesquisas(){
+         public String redirecionaPesquisas() throws ClassNotFoundException, SQLException{
              String redireciona = null;
              boolean permitidoRedirecionamento = verificaPapel();
              if(permitidoRedirecionamento){
@@ -167,7 +164,7 @@ private  boolean permiteAcesso = false;
          }
          
          
-           public String redirecionaLocais(){
+           public String redirecionaLocais() throws ClassNotFoundException, SQLException{
              String redireciona = null;
              boolean permitidoRedirecionamento = verificaPapel();
              if(permitidoRedirecionamento){
@@ -176,7 +173,7 @@ private  boolean permiteAcesso = false;
              return redireciona;
          }
            
-            public String redirecionaProjetos(){
+            public String redirecionaProjetos() throws ClassNotFoundException, SQLException{
              String redireciona = null;
              boolean permitidoRedirecionamento = verificaPapel();
              if(permitidoRedirecionamento){
@@ -187,7 +184,6 @@ private  boolean permiteAcesso = false;
          
             
             
-            
          
           public String logout(){
             
@@ -195,6 +191,7 @@ private  boolean permiteAcesso = false;
              this.permiteAcesso = false;
              String redireciona = "login?faces-redirect=true";
              this.usuario = new Usuario();
+             contextoJSF.retirarUsuarioMapaSessao();
              return redireciona;
          }
           
@@ -211,17 +208,10 @@ private  boolean permiteAcesso = false;
          }
           
           
-            public boolean verificaUsuarioLogado(){
+            public boolean verificaUsuarioLogado() throws SQLException, ClassNotFoundException{
 
-          /*    
-//                NÃO HÁ NECESSIDADE DE PEGAR PELO CONTEXTO, POIS TENHO O LOGIN E A SENHA 
-  //              EM THIS.USUARIO.GETLOGIN()
-                
-                FacesContext fc = FacesContext.getCurrentInstance();
-              Map<String, String> params = fc.getExternalContext().getRequestParameterMap();
-              String loginUsuarioLogado = params.get("j_idt6:login");
-             */
-          
+            Usuario usuario = contextoJSF.verificarUsuarioLogado();   
+           
              if (this.usuario.getNome() != null){
                     return true;
              }
@@ -239,7 +229,7 @@ private  boolean permiteAcesso = false;
              CriptografiaSenha criptoSenha = new CriptografiaSenha();
              criptoSenha.gerarNovaSenha(usuarioSemSenha);
              
-            FacesMessage mensagem = new FacesMessage("                                            "
+            String mensagem = "                                            "
                     + "                                                         "
                     + "                                       ************************"
                     + "************************************************************"
@@ -253,8 +243,8 @@ private  boolean permiteAcesso = false;
                             + "                                                          "
                             + "***********************************************************"
                             + "***********************************************************"
-                            + "***********************************************************");    
-            FacesContext.getCurrentInstance().addMessage("novaSenha", mensagem);
+                            + "***********************************************************";    
+            contextoJSF.adicionaMensagem("alerta", mensagem);
 
              }
             

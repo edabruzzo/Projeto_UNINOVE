@@ -7,8 +7,8 @@ package bean;
 
 import DAO.PapelDAO;
 import DAO.UsuarioDAO;
-import DAO.exceptions.NonexistentEntityException;
 import Util.CriptografiaSenha;
+import java.sql.SQLException;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -67,7 +67,7 @@ public class UsuarioBean {
     }
     
     
-    public List<Papel> listaPapeis(){
+    public List<Papel> listaPapeis() throws ClassNotFoundException, SQLException{
        
         boolean possuiPrivilegio = false;
         boolean possuiPrivilegioSuper = false;
@@ -127,12 +127,12 @@ public class UsuarioBean {
     }
     
     
-    public List<Usuario> listaUsuarios(){
+    public List<Usuario> listaUsuarios() throws ClassNotFoundException, SQLException{
          UsuarioDAO usuarioDAO = new UsuarioDAO();
          return usuarioDAO.consultaUsuarios();
     }
     
-    public void deletaUsuario(Usuario usuario) throws NonexistentEntityException{
+    public void deletaUsuario(Usuario usuario) throws SQLException, ClassNotFoundException {
          UsuarioDAO usuarioDAO = new UsuarioDAO();
          usuarioDAO.removerUsuario(usuario.getIdUsuario());
         

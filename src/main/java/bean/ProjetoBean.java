@@ -6,6 +6,7 @@
 package bean;
 
 import DAO.ProjetoDAO;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -37,7 +38,7 @@ public class ProjetoBean {
     }
     
     
-    public void criarNovoProjeto(){
+    public void criarNovoProjeto() throws SQLException, ClassNotFoundException{
         
         ProjetoDAO projetoDAO = new ProjetoDAO();
         this.projeto.setAtivo(true);
@@ -46,7 +47,7 @@ public class ProjetoBean {
     }
     
     
-    public List<Projeto> listaProjetos(){
+    public List<Projeto> listaProjetos() throws ClassNotFoundException, SQLException{
         
     ProjetoDAO projetoDAO = new ProjetoDAO();
     List<Projeto> listaProjetos = new ArrayList();

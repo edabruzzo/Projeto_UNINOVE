@@ -7,6 +7,7 @@ import DAO.GastoDAO;
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,7 +42,7 @@ public class ChartView implements Serializable {
     }
   
     @PostConstruct
-    public void init() {
+    public void init() throws ClassNotFoundException, SQLException {
         createAnimatedModels();
     }
  
@@ -51,7 +52,7 @@ public class ChartView implements Serializable {
     }
  
   
-    private void createAnimatedModels() {
+    private void createAnimatedModels() throws ClassNotFoundException, SQLException {
         animatedModel1 = initLinearModel();
         animatedModel1.setTitle("GASTOS POR PROJETO");
         animatedModel1.setAnimate(true);
@@ -70,7 +71,7 @@ public class ChartView implements Serializable {
         
     }
      
-    private LineChartModel initLinearModel() {
+    private LineChartModel initLinearModel() throws ClassNotFoundException, SQLException {
         LineChartModel model = new LineChartModel();
  
         LineChartSeries series1 = new LineChartSeries();
